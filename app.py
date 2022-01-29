@@ -3,7 +3,6 @@
 
 import pandas as pd
 import numpy as np
-import requests
 import plotly.graph_objs as go
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge
@@ -23,8 +22,7 @@ from datetime import datetime
 import io
 import holidays
 from tqdm import tqdm
-import locale
-locale.setlocale(locale.LC_ALL, '')
+
 
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
@@ -50,7 +48,7 @@ app = Dash(name = __name__,
           )
 
 
-app.title = 'Toimeentulotuki'
+app.title = 'Toimeentulotuki Suomessa'
 
 app.index_string = '''
 <!DOCTYPE html>
