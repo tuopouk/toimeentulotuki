@@ -1534,6 +1534,7 @@ def start(n_clicks, kunta, label_name, test, length):
                              html.Br(),
                              html.Br(),
                              html.Br(),
+                             html.Br(),
                              dbc.Card(dcc.Graph(id = 'train_val_test_fig', 
                                                 figure =train_val_test_fig),
                                       color='dark',body=True),
