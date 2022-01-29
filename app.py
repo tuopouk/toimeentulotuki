@@ -1357,7 +1357,9 @@ def serve_layout():
                                            html.Br(),
                                            html.Br(),
                                            html.Label(['Sovellus ', 
-                                                    html.A('GitHub:ssa', href='https://github.com/tuopouk/toimeentulotuki')
+                                                    html.A('GitHub:ssa', href='https://github.com/tuopouk/toimeentulotuki', 
+                                                           target = '_blank'
+                                                          )
                                                    ],style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                                        ])
 
