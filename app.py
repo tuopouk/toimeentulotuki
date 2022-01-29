@@ -25,6 +25,7 @@ from tqdm import tqdm
 
 
 
+
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
 
 features = ['edellinen', 'pv_nro', 'kuukausi_nro']
@@ -42,6 +43,7 @@ server.secret_key = os.environ.get('secret_key','secret')
 app = Dash(name = __name__, 
            prevent_initial_callbacks = False, 
            server = server,
+           external_scripts = ["https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"],
            meta_tags = [{'name':'viewport',
                         'content':'width=device-width, initial_scale=1.0, maximum_scale=1.2, minimum_scale=0.5'}],
            external_stylesheets = external_stylesheets
@@ -51,29 +53,29 @@ app = Dash(name = __name__,
 app.title = 'Toimeentulotuki Suomessa'
 #app.scripts.append_script({"external_url": "https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"})
 
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-    </head>
-    <body>
+# app.index_string = '''
+# <!DOCTYPE html>
+# <html>
+#     <head>
+#         {%metas%}
+#         <title>{%title%}</title>
+#         {%favicon%}
+#         {%css%}
+#     </head>
+#     <body>
         
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            <script src="https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"></script>
-<script>Plotly.setPlotConfig({locale: 'fi'});</script>
-          {%renderer%}
-          </footer>
+#         {%app_entry%}
+#         <footer>
+#             {%config%}
+#             {%scripts%}
+#             <script src="https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"></script>
+# <script>Plotly.setPlotConfig({locale: 'fi'});</script>
+#           {%renderer%}
+#           </footer>
           
-            </body>
-</html>
-'''
+#             </body>
+# </html>
+# '''
 
 # Haetaan Kelan toimeentulotukidata.
 def get_kela_data():
