@@ -1211,7 +1211,7 @@ def serve_layout():
                                  value = .3,
                                  step = .01,
                                  marks = {.1: {'label':'10 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          .15:{'label':'15 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          .2:{'label':'20 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                           .3:{'label':'30 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
@@ -1531,6 +1531,8 @@ def start(n_clicks, kunta, label_name, test, length):
 
         return [dbc.Row(justify='center',children=[
                     dbc.Col([html.Br(),
+                             html.Br(),
+                             html.Br(),
                              html.Br(),
                              dbc.Card(dcc.Graph(id = 'train_val_test_fig', 
                                                 figure =train_val_test_fig),
