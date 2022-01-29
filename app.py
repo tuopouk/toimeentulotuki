@@ -1230,14 +1230,14 @@ def serve_layout():
                        html.H3('Valitse ennusteen pituus.',style={'textAlign':'center', 'color':'black'}),
                        dcc.Slider(id = 'forecast_slider',
                                  min = 30,
-                                 max = 4*365,
+                                 max = 1*365,
                                  value = 90,
                                  step = 1,
                                  marks = {30: {'label':'kuukausi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                        #  180:{'label':'puoli vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          180:{'label':'puoli vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                           365:{'label':'vuosi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          4*365:{'label':'neljä vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
+                                         # 2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                        #  4*365:{'label':'neljä vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
                                  ),
@@ -1391,7 +1391,7 @@ def serve_layout():
 )
 def update_test_size_indicator(value):
     
-    return [html.P('Valitsit {} prosentin testiosuuden.'.format(int(round(100*value,1))),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})]
+    return [html.P('Valitsit {} prosentin osuuden.'.format(int(round(100*value,1))),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})]
 
 @app.callback(
     Output('forecast_slider_indicator','children'),
