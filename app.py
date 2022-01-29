@@ -51,31 +51,6 @@ app = Dash(name = __name__,
 
 
 app.title = 'Toimeentulotuki Suomessa'
-#app.scripts.append_script({"external_url": "https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"})
-
-# app.index_string = '''
-# <!DOCTYPE html>
-# <html>
-#     <head>
-#         {%metas%}
-#         <title>{%title%}</title>
-#         {%favicon%}
-#         {%css%}
-#     </head>
-#     <body>
-        
-#         {%app_entry%}
-#         <footer>
-#             {%config%}
-#             {%scripts%}
-#             <script src="https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"></script>
-# <script>Plotly.setPlotConfig({locale: 'fi'});</script>
-#           {%renderer%}
-#           </footer>
-          
-#             </body>
-# </html>
-# '''
 
 # Haetaan Kelan toimeentulotukidata.
 def get_kela_data():
@@ -1382,7 +1357,9 @@ def serve_layout():
                                            html.Br(),
                                            html.Br(),
                                            html.Label(['Sovellus ', 
-                                                    html.A('GitHub:ssa', href='https://github.com/tuopouk/suomenavainklusterit')
+                                                    html.A('GitHub:ssa', href='https://github.com/tuopouk/toimeentulotuki', 
+                                                           target = '_blank'
+                                                          )
                                                    ],style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                                        ])
 
@@ -1797,5 +1774,6 @@ def download(n_clicks, prediction, train_val_test):
 
 
 app.layout = serve_layout
+#Run app.
 if __name__ == "__main__":
     app.run_server(debug=False)
