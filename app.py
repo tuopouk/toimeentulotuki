@@ -1211,8 +1211,8 @@ def serve_layout():
                                  value = .3,
                                  step = .01,
                                  marks = {.1: {'label':'10 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          .3:{'label':'30 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                       #   .5:{'label':'50 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
+                                          .15:{'label':'15 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          .3:{'label':'30 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
                                  ),
@@ -1230,13 +1230,13 @@ def serve_layout():
                        html.H3('Valitse ennusteen pituus.',style={'textAlign':'center', 'color':'black'}),
                        dcc.Slider(id = 'forecast_slider',
                                  min = 30,
-                                 max = 2*365,
+                                 max = 1*365,
                                  value = 90,
                                  step = 1,
                                  marks = {30: {'label':'kuukausi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                           180:{'label':'puoli vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                           365:{'label':'vuosi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                         # 2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                         #  4*365:{'label':'neljä vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
