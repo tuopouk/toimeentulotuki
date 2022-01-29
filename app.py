@@ -49,7 +49,7 @@ app = Dash(name = __name__,
 
 
 app.title = 'Toimeentulotuki Suomessa'
-app.scripts.append_script({"external_url": "https://cdn.plot.ly/plotly-locale-fi-latest.js"})
+app.scripts.append_script({"external_url": "https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"})
 
 # app.index_string = '''
 # <!DOCTYPE html>
@@ -649,7 +649,7 @@ def plot_cum_data(kunta, label):
     
     
     figure.update_layout(
-                       title = dict(text = kunta+':<br>'+label+' zrfdszszzzzzzzzzzzzzzzzzzzzqaaaaaaaaasskumulatiivisena', x=.5, font=dict(size=24,family = 'Arial')),
+                       title = dict(text = kunta+':<br>'+label+' kumulatiivisena', x=.5, font=dict(size=24,family = 'Arial')),
                           template = 'seaborn',   
                           height = 600,
                          hoverlabel = dict(font_size = 16, font_family = 'Arial'),
