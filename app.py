@@ -22,6 +22,8 @@ from datetime import datetime
 import io
 import holidays
 from tqdm import tqdm
+import locale
+locale.setlocale(locale.LC_ALL, 'fi_FI')
 
 
 
