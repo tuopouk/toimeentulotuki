@@ -23,7 +23,7 @@ import io
 import holidays
 from tqdm import tqdm
 import locale
-locale.setlocale(locale.LC_ALL, 'fi_FI')
+#locale.setlocale(locale.LC_ALL, 'fi_FI')
 
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
@@ -212,10 +212,10 @@ def train_val_test(dataset, label, test_size=.3):
     
     alpha_list = []
     
-    # Alpha saa arvoja väliltä [2**-15, 2**15].
+    # Alpha saa arvoja väliltä [2**-10, 2**6].
     # Alphaa sanotaan useimmin lambdaksi. Scikit-learnissa se on kuitenkin alpha.
     
-    for alpha in tqdm([2**c for c in range(-15,6)]):
+    for alpha in tqdm([2**c for c in range(-10,7)]):
 
             
             model = Ridge(random_state=42, alpha = alpha)
