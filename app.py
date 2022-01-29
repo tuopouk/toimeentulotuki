@@ -215,7 +215,7 @@ def train_val_test(dataset, label, test_size=.3):
     # Alpha saa arvoja väliltä [2**-15, 2**15].
     # Alphaa sanotaan useimmin lambdaksi. Scikit-learnissa se on kuitenkin alpha.
     
-    for alpha in tqdm([2**c for c in range(-15,11)]):
+    for alpha in tqdm([2**c for c in range(-15,6)]):
 
             
             model = Ridge(random_state=42, alpha = alpha)
