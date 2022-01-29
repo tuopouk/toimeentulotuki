@@ -1,4 +1,4 @@
-lttbc==0.3.0
+lttbc==0.2.0
 ansi2html==1.6.0
 backcall==0.2.0
 Brotli==1.0.9
