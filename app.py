@@ -49,29 +49,30 @@ app = Dash(name = __name__,
 
 
 app.title = 'Toimeentulotuki Suomessa'
+app.scripts.append_script({"external_url": "https://cdn.plot.ly/plotly-locale-fi-latest.js"})
 
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-    </head>
-    <body>
+# app.index_string = '''
+# <!DOCTYPE html>
+# <html>
+#     <head>
+#         {%metas%}
+#         <title>{%title%}</title>
+#         {%favicon%}
+#         {%css%}
+#     </head>
+#     <body>
         
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            <script src="https://cdn.plot.ly/plotly-locale-fi-latest.js"></script>
-<script>Plotly.setPlotConfig({locale: 'fi'});</script>
-          {%renderer%}
-          </footer>
+#         {%app_entry%}
+#         <footer>
+#             {%config%}
+#             {%scripts%}
+#             <script src="https://cdn.plot.ly/plotly-locale-fi-latest.js"></script>
+# <script>Plotly.setPlotConfig({locale: 'fi'});</script>
+#           {%renderer%}
+#           </footer>
           
-            </body>
-</html>
+#             </body>
+# </html>
 '''
 
 # Haetaan Kelan toimeentulotukidata.
