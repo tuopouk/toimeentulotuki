@@ -1772,5 +1772,6 @@ def download(n_clicks, prediction, train_val_test):
 
 
 app.layout = serve_layout
+#Run app.
 if __name__ == "__main__":
     app.run_server(debug=False)
