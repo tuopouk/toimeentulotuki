@@ -23,7 +23,7 @@ import io
 import holidays
 from tqdm import tqdm
 import locale
-#locale.setlocale(locale.LC_ALL, 'fi_FI')
+locale.setlocale(locale.LC_ALL, 'fi_FI')
 
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
