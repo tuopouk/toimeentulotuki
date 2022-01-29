@@ -1218,7 +1218,7 @@ def serve_layout():
                                  ),
                         
                       html.Div(id = 'test_size_indicator', 
-                               children = [html.P('Valitsit {} prosentin testiosuuden.'.format(30),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})])
+                               children = [html.P('Valitsit {} prosentin osuuden.'.format(30),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})])
             
             
             
