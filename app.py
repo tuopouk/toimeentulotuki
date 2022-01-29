@@ -73,7 +73,7 @@ app.scripts.append_script({"external_url": "https://cdn.plot.ly/plotly-locale-fi
           
 #             </body>
 # </html>
-'''
+# '''
 
 # Haetaan Kelan toimeentulotukidata.
 def get_kela_data():
