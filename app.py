@@ -422,7 +422,7 @@ def plot_daily_data(kunta, label):
 
     l = labels[label].replace('_kum','')
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
 
     
     figure = go.Figure(data = [
@@ -631,7 +631,7 @@ def plot_cum_data(kunta, label):
       
     l = labels[label]
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
     
     figure = go.Figure(data = [
     
@@ -678,9 +678,9 @@ def plot_daily_prediction(df):
     label = df.name.values[0]
     kunta = df.kunta.values[0]
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(daily_true.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(daily_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(daily_pred.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(daily_pred.values[i],2)).replace(',',' ')) for i in range(len(daily_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(daily_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_pred.values[i],2)).replace(',',' ')) for i in range(len(daily_pred))]
     
     figure = go.Figure(data = [
                             
@@ -833,9 +833,9 @@ def plot_cumulative_prediction(df):
     df_true = df[df.forecast=='Toteutunut']
     df_pred = df[df.forecast=='Ennuste']
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(df_true.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(df_true.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(df_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_true.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(df_pred.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_pred.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_pred))]
     
     
     figure = go.Figure(data = [
@@ -894,7 +894,7 @@ def plot_daily_test(df):
     test_error = daily_test - daily_true
     test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / daily_true), 2)
 
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(daily_test.index[i].strftime('%#d. %Bta %Y'),'{:,}'.format(round(daily_true[i],2)).replace(',',' '),'{:,}'.format(round(daily_test[i],2)).replace(',',' '),'{:,}'.format(round(test_error[i],2)).replace(',',' '),round(test_error_percentage[i],2)) for i in range(len(test_data))]
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(daily_test.index[i].strftime('%-d. %Bta %Y'),'{:,}'.format(round(daily_true[i],2)).replace(',',' '),'{:,}'.format(round(daily_test[i],2)).replace(',',' '),'{:,}'.format(round(test_error[i],2)).replace(',',' '),round(test_error_percentage[i],2)) for i in range(len(test_data))]
     
 
         
@@ -904,7 +904,7 @@ def plot_daily_test(df):
                 go.Bar(x = daily_true.index, 
                        y = daily_true.values, 
                        name = 'Testidata',
-                       hovertemplate = ['{}:<br>{} €'.format(daily_true.index[i].strftime('%#d. %Bta %Y'),
+                       hovertemplate = ['{}:<br>{} €'.format(daily_true.index[i].strftime('%-d. %Bta %Y'),
                                                           '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))],
                        marker = dict(color='green')),
                 go.Scatter(x = daily_test.index, 
@@ -1092,7 +1092,7 @@ def plot_cumulative_test(df):
     test_error = test_data.ennustettu - test_data[label]
     test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / test_data[label]), 2)
 
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(test_data.index[i].strftime('%#d. %Bta %Y'),'{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),'{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),'{:,}'.format(round(test_error[i],2)).replace(',',' '),round(test_error_percentage[i],2)) for i in range(len(test_data))]
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(test_data.index[i].strftime('%-d. %Bta %Y'),'{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),'{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),'{:,}'.format(round(test_error[i],2)).replace(',',' '),round(test_error_percentage[i],2)) for i in range(len(test_data))]
     
     
     figure = go.Figure(data=[
@@ -1100,20 +1100,20 @@ def plot_cumulative_test(df):
                 go.Scatter(x = train_data.index, 
                            y = train_data[label], 
                            name = 'Opetusdata', 
-                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%#d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(train_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(train_data))],
                            marker = dict(color = 'purple')),
                 go.Scatter(x = val_data.index, 
                            y = val_data[label], 
                            name = 'Validointidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%#d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(val_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(val_data))],
                            marker = dict(color = 'orange')),
 
                 go.Scatter(x = test_data.index, 
                            y = test_data[label], 
                            name = 'Testidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%#d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(test_data))],
                            marker = dict(color='green')),
                 go.Scatter(x = test_data.index, 
@@ -1461,9 +1461,9 @@ def start(n_clicks, kunta, label_name, test, length):
         pred_df = prediction[prediction.forecast=='Ennuste']
         
         
-        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
+        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
     
-        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%#d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
+        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
     
 
 
@@ -1505,27 +1505,27 @@ def start(n_clicks, kunta, label_name, test, length):
         test_error = test_data.ennustettu - test_data[label]
         test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / test_data[label]), 2)
 
-        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(test_data.index[i].strftime('%#d. %Bta %Y'),'{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),'{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),'{:,}'.format(round(test_error[i],2)).replace(',',' '),round(test_error_percentage[i],2)) for i in range(len(test_data))]
+        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(test_data.index[i].strftime('%-d. %Bta %Y'),'{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),'{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),'{:,}'.format(round(test_error[i],2)).replace(',',' '),round(test_error_percentage[i],2)) for i in range(len(test_data))]
 
         train_val_test_fig = go.Figure(data=[
 
                 go.Scatter(x = train_data.index, 
                            y = train_data[label], 
                            name = 'Opetusdata',
-                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%#d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(train_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(train_data))],
                            marker = dict(color = 'purple')),
                 go.Scatter(x = val_data.index, 
                            y = val_data[label], 
                            name = 'Validointidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%#d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(val_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(val_data))],
                            marker = dict(color = 'orange')),
 
                 go.Scatter(x = test_data.index, 
                            y = test_data[label], 
                            name = 'Testidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%#d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(test_data))],
                            marker = dict(color='green')),
                  
