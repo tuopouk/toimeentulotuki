@@ -1334,7 +1334,7 @@ def serve_layout():
                                 html.Div(style={'text-align':'center'},children = [
                                            html.H4('Lähteet', style = {'text-align':'center', 'color':'black'}),
                                            html.Br(),
-                                           html.Label(['Tilastokeskus: ', 
+                                           html.Label(['Kela: ', 
                                                     html.A('Kelan maksaman perustoimeentulotuen menot ja palautukset', href = "https://www.avoindata.fi/data/fi/dataset/kelan-maksaman-perustoimeentulotuen-menot-ja-palautukset",target="_blank")
                                                    ],style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                            html.Br(),
