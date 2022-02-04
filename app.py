@@ -524,7 +524,74 @@ def plot_monthly_data(kunta, label):
                         )
                     )
     
+    
+    return figure
 
+
+# Visualisoidaan haluttu muuttuja viikoittain.
+def plot_weekly_data(kunta, label):
+    
+    df = data[data.kunta_nimi==kunta]
+
+    l = labels[label].replace('_kum','')
+    
+    df = df.resample('W')[l].sum()
+    
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
+    
+    figure = go.Figure(data = [
+                            go.Scatter(x = df.index,
+                                       y = df.values,
+                                      name = '',
+                                       mode = 'lines+markers',
+                                       marker = dict(color='orange'),
+                                      hovertemplate = hovertemplate)
+                            ],
+                       layout = go.Layout()
+                      )
+    
+    
+    figure.update_layout(yaxis = dict(title = dict(text = label + ' (€)',
+                                                                 font=dict(size=16, family = 'Arial Black')
+                                                                 ),  
+                                                     tickfont = dict(size=14)
+                                     ),
+                       title = dict(text = kunta+':<br>'+label+' viikoittain', x=.5, font=dict(size=24,family = 'Arial')),
+                          template = 'seaborn',
+                         height = 600,
+                       legend = dict(font=dict(size=18)),
+                         hoverlabel = dict(font_size = 16, font_family = 'Arial'),
+                       xaxis=dict(title = dict(text = 'Aika',
+                                                font=dict(size=18, family = 'Arial Black')
+                                               ),
+                                   tickfont = dict(size=14),
+                            rangeselector=dict(
+                                buttons=list([
+                                    dict(count=1,
+                                         label="1kk",
+                                         step="month",
+                                         stepmode="backward"),
+                                    dict(count=6,
+                                         label="6kk",
+                                         step="month",
+                                         stepmode="backward"),
+                                    dict(count=1,
+                                         label="YTD",
+                                         step="year",
+                                         stepmode="todate"),
+                                    dict(count=1,
+                                         label="1v",
+                                         step="year",
+                                         stepmode="backward"),
+                                    dict(step="all",label = 'MAX')
+                                ])
+                            ),
+                            rangeslider=dict(
+                                visible=True
+                            ),
+                            type="date"
+                        )
+                    )
     
     
     return figure
@@ -568,10 +635,7 @@ def plot_quaterly_data(kunta, label):
                                                 
                             rangeselector=dict(
                                 buttons=list([
-                                    dict(count=1,
-                                         label="1kk",
-                                         step="month",
-                                         stepmode="backward"),
+
                                     dict(count=6,
                                          label="6kk",
                                          step="month",
@@ -595,8 +659,68 @@ def plot_quaterly_data(kunta, label):
                     )
     
 
+    return figure
+
+
+# Visualisoidaan haluttu muuttuja vuosittain.
+def plot_yearly_data(kunta, label):
+    
+    df = data[data.kunta_nimi==kunta]
+
+    l = labels[label].replace('_kum','')
+    
+    df = df.resample('Y')[l].sum()
+    
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
+    
+    figure = go.Figure(data = [
+                            go.Scatter(x = df.index,
+                                       y = df.values,
+                                      name = '',
+                                       mode = 'lines+markers',
+                                       marker = dict(color='grey'),
+                                      hovertemplate = hovertemplate)
+                            ],
+                       layout = go.Layout()
+                      )
     
     
+    figure.update_layout(yaxis = dict(title = dict(text = label + ' (€)',
+                                                                 font=dict(size=16, family = 'Arial Black')
+                                                                 ),  
+                                                     tickfont = dict(size=14)
+                                     ),
+                       title = dict(text = kunta+':<br>'+label+' vuosittain', x=.5, font=dict(size=24,family = 'Arial')),
+                          template = 'seaborn',
+                         height = 600,
+                         hoverlabel = dict(font_size = 16, font_family = 'Arial'),
+                        xaxis=dict(title = dict(text = 'Aika',
+                                                font=dict(size=18, family = 'Arial Black')
+                                               ),
+                                   tickfont = dict(size=14),
+                                                
+                            rangeselector=dict(
+                                buttons=list([
+
+                                    dict(count=1,
+                                         label="YTD",
+                                         step="year",
+                                         stepmode="todate"),
+                                    dict(count=1,
+                                         label="1v",
+                                         step="year",
+                                         stepmode="backward"),
+                                    dict(step="all",label = 'MAX')
+                                ])
+                            ),
+                            rangeslider=dict(
+                                visible=True
+                            ),
+                            type="date"
+                        )
+                    )
+    
+
     return figure
                     
 # Visualisoidaan haluttu muuttuja kumulatiivisena.
@@ -690,6 +814,58 @@ def plot_daily_prediction(df):
     
     
     return figure
+
+
+# Visualisoidaan ennuste viikoittain.
+def plot_weekly_prediction(df):
+    
+    daily_true = df[df.forecast=='Toteutunut'].daily
+    daily_pred = df[df.forecast=='Ennuste'].daily
+    
+    weekly_true = daily_true.resample('Q').sum()
+    weekly_pred = daily_pred.resample('Q').sum()  
+    
+    
+    label = df.name.values[0]
+    kunta = df.kunta.values[0]
+    
+    hover_true = ['<b>{}</b>:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))]
+    
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(weekly_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_pred.values[i],2)).replace(',',' ')) for i in range(len(weekly_pred))]
+    
+    figure = go.Figure(data = [
+                            
+                            go.Bar(x = weekly_true.index, 
+                                   y = weekly_true.values, 
+                                   name = 'Toteutunut',
+                                   hovertemplate = hover_true,
+                                   marker = dict(color='green')),
+                            go.Bar(x = weekly_pred.index, 
+                                   y = weekly_pred.values, 
+                                   name = 'Ennuste', 
+                                   hovertemplate = hover_pred,
+                                   marker = dict(color='red'))
+    
+                            ],
+                       layout = go.Layout(xaxis = dict(title = dict(text='Aika',
+                                                                      font=dict(size=18, family = 'Arial Black')
+                                                                   ),
+                                                       tickfont = dict(size=14)
+                                                        ),
+                                        yaxis = dict(title = dict(text = label + ' (€)',
+                                                                 font=dict(size=16, family = 'Arial Black')
+                                                                 ),  
+                                                     tickfont = dict(size=14)
+                                                    ),
+                                          hoverlabel = dict(font_size = 16, font_family = 'Arial'),
+                                          legend = dict(font=dict(size=18)),
+                                          height = 600,
+                                         title = dict(text = kunta+':<br>'+label+' viikoittain', x=.5, font=dict(size=24,family = 'Arial'))
+                                          )
+                      )
+    
+    
+    return figure
                        
 # Visualisoidaan ennuste kvartaaleittain.                       
 def plot_quaterly_prediction(df):
@@ -739,6 +915,59 @@ def plot_quaterly_prediction(df):
                                           legend = dict(font=dict(size=18)),
                                           height = 600,
                                          title = dict(text = kunta+':<br>'+label+' kvartaaleittain', x=.5, font=dict(size=24,family = 'Arial'))
+                                          )
+                      )
+    
+    return figure
+
+# Visualisoidaan ennuste vuosittain.                       
+def plot_yearly_prediction(df):
+    
+    daily_true = df[df.forecast=='Toteutunut'].daily
+    daily_pred = df[df.forecast=='Ennuste'].daily
+                       
+    yearly_true = daily_true.resample('Y').sum()
+    yearly_pred = daily_pred.resample('Y').sum()                    
+                       
+    yearly_true.index = [i.strftime('%Y')  for i in yearly_true.index]
+    yearly_pred.index = [i.strftime('%Y') for i in yearly_pred.index]
+                       
+    label = df.name.values[0]
+    kunta = df.kunta.values[0]
+    
+    
+    hover_true = ['<b>{}</b>:<br>{} €'.format(yearly_true.index[i], '{:,}'.format(round(yearly_true.values[i],2)).replace(',',' ')) for i in range(len(yearly_true))]
+    
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(yearly_pred.index[i], '{:,}'.format(round(yearly_pred.values[i],2)).replace(',',' ')) for i in range(len(yearly_pred))]
+    
+    figure = go.Figure(data = [
+                            
+                            go.Bar(x = yearly_true.index, 
+                                   y = yearly_true.values, 
+                                   name = 'Toteutunut',
+                                   hovertemplate = hover_true,
+                                   marker = dict(color='green')),
+                            go.Bar(x = yearly_pred.index, 
+                                   y = yearly_pred.values, 
+                                   name = 'Ennuste', 
+                                   hovertemplate = hover_pred,
+                                   marker = dict(color='red'))
+    
+                            ],
+                       layout = go.Layout(xaxis = dict(title = dict(text='Aika',
+                                                                      font=dict(size=18, family = 'Arial Black')
+                                                                   ),
+                                                       tickfont = dict(size=14)
+                                                        ),
+                                        yaxis = dict(title = dict(text = label + ' (€)',
+                                                                 font=dict(size=16, family = 'Arial Black')
+                                                                 ),  
+                                                     tickfont = dict(size=14)
+                                                    ),
+                                          hoverlabel = dict(font_size = 16, font_family = 'Arial'),
+                                          legend = dict(font=dict(size=18)),
+                                          height = 600,
+                                         title = dict(text = kunta+':<br>'+label+' vuosittain', x=.5, font=dict(size=24,family = 'Arial'))
                                           )
                       )
     
@@ -908,6 +1137,72 @@ def plot_daily_test(df):
                       )
     
     return figure
+
+
+# Visualisoidaan testitulokset viikoittain.
+def plot_weekly_test(df):
+    
+    label_name = df.name.values[0]
+    label = labels[label_name]
+    kunta = df.kunta.values[0]
+    
+    train_data = df[df.split=='train']
+    val_data = df[df.split=='val']
+    test_data = df[df.split=='test']
+    
+    daily_train = train_data[label] - train_data['edellinen']
+    daily_val = val_data[label] - val_data['edellinen']
+    test_data['prev'] = test_data.ennustettu.shift(periods=1)
+    test_data.prev = test_data.prev.fillna(test_data.edellinen)
+    daily_test = test_data['ennustettu'] - test_data['prev']
+    daily_true = test_data[label] - test_data['edellinen']
+    
+    weekly_test = daily_test.resample('W').sum()
+    weekly_true = daily_true.resample('W').sum()
+
+    
+    test_error = weekly_test - weekly_true
+    test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / weekly_true), 2)
+
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(weekly_test.index[i].strftime('%-d. %Bta %Y'),'{:,}'.format(round(weekly_true[i],2)).replace(',',' '),'{:,}'.format(round(weekly_test[i],2)).replace(',',' '),'{:,}'.format(round(test_error[i],2)).replace(',',' '),round(test_error_percentage[i],2)) for i in range(len(weekly_test))]
+    
+
+        
+        
+    figure = go.Figure(data=[
+
+                go.Bar(x = weekly_true.index, 
+                       y = weekly_true.values, 
+                       name = 'Testidata',
+                       hovertemplate = ['{}:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %Bta %Y'),
+                                                          '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))],
+                       marker = dict(color='green')),
+                go.Scatter(x = weekly_test.index, 
+                           y = weekly_test.values, 
+                           name = 'Ennuste',
+                           mode = 'markers', 
+                           hovertemplate=hovertemplate, 
+                           marker = dict(color='red', size = 10)),
+           
+
+        ],
+                       layout=go.Layout(xaxis = dict(title = dict(text='Aika',
+                                                                      font=dict(size=18, family = 'Arial Black')
+                                                                   ),
+                                                       tickfont = dict(size=14)
+                                                        ),
+                                        yaxis = dict(title = dict(text = label_name + ' (€)',
+                                                                 font=dict(size=16, family = 'Arial Black')
+                                                                 ),  
+                                                     tickfont = dict(size=14)
+                                                    ),
+                                        legend = dict(font=dict(size=18)),
+                                        height = 600,
+                                        hoverlabel = dict(font_size = 16, font_family = 'Arial'),
+                                        title = dict(text=kunta+':<br>'+label_name+' viikoittain',x=.5, font=dict(size=24,family = 'Arial')))
+                      )
+    
+    return figure
     
 # Visualisoidaan testitulokset kuukausittain.    
 def plot_monthly_test(df):
@@ -978,6 +1273,80 @@ def plot_monthly_test(df):
                                         height = 600,
                                         hoverlabel = dict(font_size = 16, font_family = 'Arial'),
                                         title = dict(text=kunta+':<br>'+label_name+' kuukausittain',x=.5, font=dict(size=24,family = 'Arial'))
+                                       )
+                      ) 
+    return figure
+
+
+# Visualisoidaan testitulokset vuosittain.    
+def plot_yearly_test(df):
+    
+    label_name = df.name.values[0]
+    label = labels[label_name]
+    kunta = df.kunta.values[0]
+    
+    train_data = df[df.split=='train']
+    val_data = df[df.split=='val']
+    test_data = df[df.split=='test']
+    
+    daily_train = train_data[label] - train_data['edellinen']
+    daily_val = val_data[label] - val_data['edellinen']
+    test_data['prev'] = test_data.ennustettu.shift(periods=1)
+    test_data.prev = test_data.prev.fillna(test_data.edellinen)
+    daily_test = test_data['ennustettu'] - test_data['prev']
+    daily_true = test_data[label] - test_data['edellinen']
+    
+    
+    
+    yearly_test = daily_test.resample('Y').sum()
+    yearly_true = daily_true.resample('Y').sum()
+       
+      
+
+    
+    test_error = yearly_true - yearly_test
+    test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / yearly_true), 2)
+
+
+    yearly_true.index = [i.strftime('%Y')  for i in yearly_true.index]
+    yearly_test.index = [i.strftime('%Y') for i in yearly_test.index]
+    
+    hover_true = ['{}:<br>{} €'.format(yearly_true.index[i],
+                                                          '{:,}'.format(round(yearly_true.values[i],2)).replace(',',' ')) for i in range(len(yearly_true))]
+    
+    hover_test = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(yearly_true.index[i],'{:,}'.format(round(yearly_true.values[i],2)).replace(',',' '),'{:,}'.format(round(yearly_test.values[i],2)).replace(',',' '),'{:,}'.format(round(test_error.values[i],2)).replace(',',' '),round(test_error_percentage.values[i],2)) for i in range(len(yearly_true))]
+    
+    
+    figure = go.Figure(data=[
+
+                go.Bar(x = yearly_true.index, 
+                       y = yearly_true.values, 
+                       name = 'Testidata', 
+                       hovertemplate = hover_true, 
+                       marker = dict(color='green')),
+                go.Scatter(x = yearly_test.index,
+                           y = yearly_test.values, 
+                           name = 'Ennuste',
+                           mode = 'markers', 
+                           hovertemplate=hover_test, 
+                           marker = dict(color='red', size = 10)),
+           
+
+        ],
+                       layout=go.Layout(xaxis = dict(title = dict(text='Aika',
+                                                                      font=dict(size=18, family = 'Arial Black')
+                                                                   ),
+                                                       tickfont = dict(size=14)
+                                                        ),
+                                        yaxis = dict(title = dict(text = label_name + ' (€)',
+                                                                 font=dict(size=16, family = 'Arial Black')
+                                                                 ),
+                                                     tickfont = dict(size=14)
+                                                    ),
+                                        legend = dict(font=dict(size=18)),
+                                        height = 600,
+                                        hoverlabel = dict(font_size = 16, font_family = 'Arial'),
+                                        title = dict(text=kunta+':<br>'+label_name+' vuosittain',x=.5, font=dict(size=24,family = 'Arial'))
                                        )
                       ) 
     return figure
@@ -1175,8 +1544,10 @@ def serve_layout():
 
                         dbc.Col([dbc.RadioItems(id = 'orig_resampler', 
                                       options = [{'label':'Päivittäin','value':'D'}, 
+                                                 {'label':'Viikoittain','value':'W'},
                                                  {'label':'Kuukausittain', 'value':'M'}, 
-                                                 {'label':'Kvartaaleittain', 'value': 'Q',}
+                                                 {'label':'Kvartaaleittain', 'value': 'Q',},
+                                                 {'label':'Vuosittain','value':'Y'}
                                           
                                                 ],
                                       className="form-group",
@@ -1442,7 +1813,7 @@ def start(n_clicks, kunta, label_name, test, length):
     
         hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
     
-
+        
 
         predict_fig = go.Figure(data =[
 
@@ -1528,7 +1899,18 @@ def start(n_clicks, kunta, label_name, test, length):
                                             hoverlabel = dict(font_size = 16, font_family = 'Arial'),
                                         title = dict(text=kunta+':<br>'+label_name,x=.5, font=dict(size=24,family = 'Arial'))))
         
-
+        
+        frequency_options = [{'label':'Päivittäin','value':'D'},
+                             {'label':'Viikoittain','value':'W'},
+                             {'label':'Kuukausittain', 'value':'M'}]
+        
+        if length >= 90:
+            frequency_options.append({'label':'Kvartaaleittain', 'value': 'Q'})
+        if length >= 365:
+            frequency_options.append({'label':'Vuosittain', 'value': 'Y'})
+        
+        frequency_options.append({'label':'Kumulatiivisena', 'value': 'KUM'})
+        
         return [dbc.Row(justify='center',children=[
                     dbc.Col([html.Br(),
                              html.Br(),
@@ -1540,21 +1922,17 @@ def start(n_clicks, kunta, label_name, test, length):
                                       color='dark',body=True),
                              html.P('λ = '+str(alpha)),
                              html.Br(),
-                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa joko päivittäin, kuukausittain, kvartaaleittain tai kumulatiivisena. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää myös testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})],
+                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa oikean aikyksikön valinnan mukaan. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää myös testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})],
                             xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
                 
                    dbc.Col([dbc.RadioItems(id = 'resampler', 
-                                      options = [{'label':'Päivittäin','value':'D'}, 
-                                                 {'label':'Kuukausittain', 'value':'M'}, 
-                                                 {'label':'Kvartaaleittain', 'value': 'Q',},
-                                                 {'label':'Kumulatiivisena', 'value': 'KUM'}
-                                                ],
+                                           options = frequency_options,
                                       className="form-group",
                                       inputClassName="form-check",
                                       labelClassName="btn btn-outline-warning",
                                       labelCheckedClassName="active",
                                       
-                                      value = 'KUM',
+                                      value = None,
                                      labelStyle={'font-size':22, 'display':'block'}
                                      )
                                 ],
@@ -1570,7 +1948,7 @@ def start(n_clicks, kunta, label_name, test, length):
                                      color='dark',
                                      body=True),
                            html.Br(),
-                           html.P('Tässä kuvaajassa esitetään itse ennuste, jota voi tarkastella, testitulosten tavoin, joko päivittäin, kuukausittain, kvartaaleittain tai kumulatiivisena. Yleisesti ottaen, ennuste on kumulatiivisessa muodossaan tarkimmillaan ja heikoimillaan päiväkohtaisessa ennusteessa.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
+                           html.P('Tässä kuvaajassa esitetään itse ennuste, jota voi tarkastella, testitulosten tavoin halutulla aikayksiköllä. Yleisesti ottaen, ennuste on kumulatiivisessa muodossaan tarkimmillaan ja heikoimillaan päiväkohtaisessa ennusteessa.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                            ],
                            xs =10, sm=8, md=5, lg=5, xl=5, align = 'center')
                ]),
@@ -1609,10 +1987,14 @@ def update_predict_graph(df, rs):
     
     if rs == 'D':
         return plot_daily_prediction(df)
+    elif rs == 'W':
+        return plot_weekly_prediction(df)
     elif rs == 'M':
         return plot_monthly_prediction(df)
     elif rs == 'Q':
         return plot_quaterly_prediction(df)
+    elif rs == 'Y':
+        return plot_yearly_prediction(df)
     else:
         return plot_cumulative_prediction(df)
     
@@ -1632,10 +2014,14 @@ def update_test_graph(df, rs):
     
     if rs == 'D':
         return plot_daily_test(df)
+    elif rs == 'W':
+        return plot_weekly_test(df)
     elif rs == 'M':
         return plot_monthly_test(df)
     elif rs == 'Q':
         return plot_quaterly_test(df)
+    elif rs == 'Y':
+        return plot_yearly_test(df)
     else:
         return plot_cumulative_test(df)    
     
@@ -1663,6 +2049,15 @@ def update_daily_graph(kunta, rs, label):
                 html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa päivittäin.',
                        style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                ]
+    elif rs == 'W':
+        return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
+                                                figure = plot_weekly_data(kunta,label))]),
+                        body=False, 
+                        color = 'dark'),
+                html.Br(),
+                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa viikoittain.',
+                       style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
+               ]
     elif rs == 'M':
         return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
                                                 figure = plot_monthly_data(kunta,label))]),
@@ -1679,6 +2074,15 @@ def update_daily_graph(kunta, rs, label):
                         color = 'dark'),
                 html.Br(),
                 html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa kvartaaleittain.',
+                       style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
+               ]
+    elif rs == 'Y':
+        return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
+                                                figure = plot_yearly_data(kunta,label))]),
+                        body=False, 
+                        color = 'dark'),
+                html.Br(),
+                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa vuosittain.',
                        style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                ]
      
