@@ -2771,20 +2771,20 @@ def download(n_clicks, prediction, train_val_test):
         test_data['Suhteellinen päivävirhe (LR)'] = test_data['Absoluuttinen päivävirhe (LR)'] / test_data['Päiväkohtainen arvo']        
         
                                                                                               
-        mae = test_data['Absoluuttinen virhe'].sum() / len(test_data)   
-        mape = test_data['Suhteellinen virhe'].sum() / len(test_data)
+        mae = test_data['Absoluuttinen virhe'].mean()   
+        mape = test_data['Suhteellinen virhe'].mean()
         accuracy = 1 - mape
         
-        mae_lr = test_data['Absoluuttinen virhe (LR)'].sum() / len(test_data)
-        mape_lr = test_data['Suhteellinen virhe (LR)'].sum() / len(test_data)
+        mae_lr = test_data['Absoluuttinen virhe (LR)'].mean()
+        mape_lr = test_data['Suhteellinen virhe (LR)'].mean()
         accuracy_lr = 1 - mape_lr
         
-        mae_day = test_data['Absoluuttinen päivävirhe'].sum() / len(test_data)   
-        mape_day = test_data['Suhteellinen päivävirhe'].sum() / len(test_data)
+        mae_day = test_data['Absoluuttinen päivävirhe'].mean()   
+        mape_day = test_data['Suhteellinen päivävirhe'].mean()
         accuracy_day = 1 - mape_day
         
-        mae_lr_day = test_data['Absoluuttinen päivävirhe (LR)'].sum() / len(test_data)
-        mape_lr_day = test_data['Suhteellinen päivävirhe (LR)'].sum() / len(test_data)
+        mae_lr_day = test_data['Absoluuttinen päivävirhe (LR)'].mean()
+        mape_lr_day = test_data['Suhteellinen päivävirhe (LR)'].mean()
         accuracy_lr_day = 1 - mape_lr_day
         
         
