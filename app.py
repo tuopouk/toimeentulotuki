@@ -2225,7 +2225,14 @@ def serve_layout():
                                            html.Label(['Wikipedia: ', 
                                                     html.A('Lasso-regressio (englanniksi)', href = "https://en.wikipedia.org/wiki/Lasso_regression",target="_blank")
                                                    ],style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
-                                           html.Br()
+                                           html.Br(),
+                                           html.Label(['Wikipedia: ', 
+                                                    html.A('Ridge-regressio (i.e. Tikhonov regularisaatio, englanniksi)', href = "https://en.wikipedia.org/wiki/Tikhonov_regularization",target="_blank")
+                                                   ],style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                           html.Br(),
+                                           html.Label(['Wikipedia: ', 
+                                                    html.A('Elastinen verkko -regressio (englanniksi)', href = "https://en.wikipedia.org/wiki/Elastic_net_regularization",target="_blank")
+                                                   ],style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
 
                                        ]),
                                  html.Br(),
