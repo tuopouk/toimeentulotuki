@@ -33,7 +33,7 @@ distance_baseline = .75
 in_dev = False
 
 # Kuinka monta sekuntia saa metodi kestää. Tarvitaan herokua varten.
-heroku_threshold = {True:10*60, False:10}[in_dev]
+heroku_threshold = {True:10*60, False:15}[in_dev]
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
 
@@ -2070,8 +2070,8 @@ def serve_layout():
                                  step = .01,
                                  marks = {.1: {'label':'10 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                           .15:{'label':'15 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                         # .2:{'label':'20 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          #.3:{'label':'30 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                       #   .2:{'label':'20 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                       #   .3:{'label':'30 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                          # .5:{'label':'50 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
@@ -2096,8 +2096,8 @@ def serve_layout():
                                  marks = {30: {'label':'kuukausi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                           90: {'label':'kolme kuukautta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                           180:{'label':'puoli vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                         # 365:{'label':'vuosi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                         # 2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                     #     365:{'label':'vuosi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                     #     2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                         #  4*365:{'label':'neljä vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
