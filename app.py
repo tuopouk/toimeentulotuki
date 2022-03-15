@@ -2453,7 +2453,7 @@ def start(n_clicks, kunta, label_name, reg_type, test, length):
                                             legend = dict(font=dict(size=18)),
                                             height = 600,
                                             hoverlabel = dict(font_size = 16, font_family = 'Arial'),
-                                        title = dict(text=kunta+':<br>'+label_name+' kumulatiivisena (ennuste)',x=.5, font=dict(size=24,family = 'Arial'))))
+                                        title = dict(text=kunta+':<br>'+label_name+' kumulatiivisena (testi)',x=.5, font=dict(size=24,family = 'Arial'))))
         
         
         frequency_options = [{'label':'Päivittäin','value':'D'},
