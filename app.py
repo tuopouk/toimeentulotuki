@@ -1462,7 +1462,7 @@ def plot_daily_test(df):
 
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i],
         '{:,}'.format(round(daily_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(daily_test[i],2)).replace(',',' '),
@@ -1502,7 +1502,8 @@ def plot_daily_test(df):
                        layout=go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
-                                                       tickfont = dict(size=14)
+                                                       tickfont = dict(size=14),
+                                                       tickformat = '%-d.%m.%Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1549,7 +1550,7 @@ def plot_weekly_test(df):
 
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(weekly_test.index[i],
         '{:,}'.format(round(weekly_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(weekly_test[i],2)).replace(',',' '),
@@ -1589,7 +1590,8 @@ def plot_weekly_test(df):
                        layout=go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
-                                                       tickfont = dict(size=14)
+                                                       tickfont = dict(size=14),
+                                                       tickformat = '%-d.%m.%Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -2831,4 +2833,4 @@ def download(n_clicks, prediction, train_val_test):
 app.layout = serve_layout
 #Run app.
 if __name__ == "__main__":
-    app.run_server(debug=in_dev)
+    app.run_server(debug=in_dev, threaded = True)
