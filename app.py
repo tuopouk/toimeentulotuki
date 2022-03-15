@@ -26,6 +26,8 @@ import time
 import locale
 locale.setlocale(locale.LC_ALL, 'fi_FI')
 
+pd.set_option('use_inf_as_na', True)
+
 # Käänteisen etäisyyden normalisointi.
 distance_baseline = .75
 
@@ -1503,7 +1505,7 @@ def plot_daily_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%-d.%m.%Y',
+                                                       tickformat = '%-d.%-m.%Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1591,7 +1593,7 @@ def plot_weekly_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%-d.%m.%Y',
+                                                       tickformat = '%-d.%-m.%Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
