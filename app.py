@@ -2449,7 +2449,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                              {'label':'Viikoittain','value':'W'},
                              {'label':'Kuukausittain', 'value':'M'}]
 
-
+        frequency_options.append({'label':'Kumulatiivisena', 'value': 'KUM'})
         
         return [dbc.Row(children = [
             
