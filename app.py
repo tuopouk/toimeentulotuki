@@ -746,7 +746,7 @@ def plot_monthly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                  tickformat='%-m %Y',
+                                  tickformat='%-m / %Y',
                             rangeselector=dict(
                                 buttons=list([
                                     dict(count=1,
@@ -888,7 +888,7 @@ def plot_quaterly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                   tickformat='%-m %Y',
+                                   tickformat='%-m / %Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
@@ -957,7 +957,7 @@ def plot_yearly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                   tickformat='%Y',
+                                   tickformat='%-m / %Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
@@ -1074,8 +1074,8 @@ def plot_daily_prediction(df):
                                                                    ),
                                                        tickfont = dict(size=14),
                                                        tickformat='%-d.%-m %Y',
-                                                       rangeslider=dict(visible=True),
-                                                       type='date'
+#                                                        rangeslider=dict(visible=True),
+#                                                        type='date'
                                                        
                                                         ),
                                         yaxis = dict(title = dict(text = label + ' (€)',
