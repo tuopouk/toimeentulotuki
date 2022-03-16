@@ -673,6 +673,7 @@ def plot_daily_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
+                                  tickformat='%-d.%-m %Y',
                             rangeselector=dict(
                                 buttons=list([
                                     dict(count=1,
@@ -745,6 +746,7 @@ def plot_monthly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
+                                  tickformat='%-m %Y',
                             rangeselector=dict(
                                 buttons=list([
                                     dict(count=1,
@@ -816,6 +818,7 @@ def plot_weekly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
+                                  tickformat='%-d.%-m %Y',
                             rangeselector=dict(
                                 buttons=list([
                                     dict(count=1,
@@ -885,6 +888,7 @@ def plot_quaterly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
+                                   tickformat='%-m %Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
@@ -953,6 +957,7 @@ def plot_yearly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
+                                   tickformat='%Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
@@ -1012,7 +1017,8 @@ def plot_cum_data(df, label):
                           xaxis = dict(title = dict(text='Aika',
                                                      font=dict(size=18, family = 'Arial Black')
                                                     ),
-                                        tickfont = dict(size=14)
+                                        tickfont = dict(size=14),
+                                       tickformat='%-d.%-m %Y',
                                         ),
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1066,12 +1072,17 @@ def plot_daily_prediction(df):
                        layout = go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
-                                                       tickfont = dict(size=14)
+                                                       tickfont = dict(size=14),
+                                                       tickformat='%-d.%-m %Y',
+                                                       rangeslider=dict(visible=True),
+                                                       type='date'
+                                                       
                                                         ),
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
                                                      tickfont = dict(size=14),
+                                                     
                                                      exponentformat= "none", 
                                                          separatethousands= True
                                                     ),
@@ -1132,12 +1143,14 @@ def plot_weekly_prediction(df):
                        layout = go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
-                                                       tickfont = dict(size=14)
+                                                       tickfont = dict(size=14),
+                                                       tickformat='%-d.%-m %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
                                                      tickfont = dict(size=14),
+                                                     
                                                      exponentformat= "none", 
                                                          separatethousands= True
                                                     ),
@@ -1338,7 +1351,8 @@ def plot_monthly_prediction(df):
                        layout = go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
-                                                       tickfont = dict(size=14)
+                                                       tickfont = dict(size=14),
+                                                       
                                                         ),
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1398,12 +1412,14 @@ def plot_cumulative_prediction(df):
                        layout = go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
-                                                       tickfont = dict(size=14)
+                                                       tickfont = dict(size=14),
+                                                       tickformat='%-d.%-m %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
                                                      tickfont = dict(size=14),
+                                                     
                                                      exponentformat= "none", 
                                                          separatethousands= True
                                                     ),
@@ -1952,12 +1968,14 @@ def plot_cumulative_test(df):
                            layout=go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
-                                                       tickfont = dict(size=14)
+                                                       tickfont = dict(size=14),
+                                                         tickformat='%-d.%-m %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                   font=dict(size=16, family = 'Arial Black')
                                                                  ),
                                                      tickfont = dict(size=14),
+                                                     
                                                      exponentformat= "none", 
                                                          separatethousands= True
                                                     ),
@@ -2376,7 +2394,8 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                            layout=go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                      ),
-                                                         tickfont = dict(size=14)
+                                                         tickfont = dict(size=14),
+                                                         tickformat='%-d.%-m %Y'
                                                          
                                                         ),
                                         yaxis = dict(title = dict(text=label_name + ' (€)',
@@ -2565,12 +2584,14 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
                            layout = go.Layout(xaxis = dict(title = dict(text='Aika',
                                                                           font=dict(size=18, family = 'Arial Black')
                                                                        ),
-                                                           tickfont = dict(size=14)), 
+                                                           tickfont = dict(size=14),
+                                                          tickformat='%-d.%-m %Y'
+                                                          ), 
                                               yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                        font=dict(size=16, family = 'Arial Black')
                                                                        ),
                                                            tickfont = dict(size=14),
-                                                           exponentformat= "none", 
+                                                          exponentformat= "none", 
                                                          separatethousands= True
                                                           ),
                                               legend = dict(font=dict(size=18)),
