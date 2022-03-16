@@ -35,7 +35,7 @@ distance_baseline = .75
 in_dev = False
 
 # Kuinka monta sekuntia saa metodi kestää. Tarvitaan herokua varten.
-heroku_threshold = {True:10*60, False:10}[in_dev]
+heroku_threshold = {True:10*60, False:20}[in_dev]
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
 
@@ -410,15 +410,23 @@ def baseline(train_data, test_data, label):
 # Optimoidaan hyperparametri validointidatalla
 # ja testataan lopullinen algoritmi testidatalla.
 # Palautetaan tulosmatriisi.
-def train_val_test(dataset, label, reg_type, test_size=.3):
+def train_val_test(dataset, label, reg_type, test_size = 100):
     
     # Train - test -jako
     
-    train_size = 1 - test_size
-    train_data = dataset.iloc[:int(train_size*len(dataset)),:]
-    test_data = dataset.iloc[int(train_size*len(dataset)):,:]
+    #train_size = 1 - test_size
+    
+    train_size = len(dataset) - test_size
+    
+    train_data = dataset.iloc[:train_size,:]
+    test_data = dataset.iloc[train_size:,:]
     val_data = test_data.iloc[:int(len(test_data)/2),:]
     test_data = test_data.iloc[int(len(test_data)/2):,:]
+    
+#     train_data = dataset.iloc[:int(train_size*len(dataset)),:]
+#     test_data = dataset.iloc[int(train_size*len(dataset)):,:]
+#     val_data = test_data.iloc[:int(len(test_data)/2),:]
+#     test_data = test_data.iloc[int(len(test_data)/2):,:]
     
     df = train_data.iloc[-1:,:].copy()
     df.edellinen = df[label]
@@ -434,11 +442,11 @@ def train_val_test(dataset, label, reg_type, test_size=.3):
     
     alpha_list = []
     
-    # Alpha saa arvoja väliltä [2**-3, 2**3] ja 0.
+    # Alpha saa arvoja väliltä [2**-10, 2**10].
     # Alphaa sanotaan useimmin lambdaksi. Scikit-learnissa se on kuitenkin alpha.
     
-    regularization_params = [2**c for c in range(-5,6)]
-    regularization_params.append(0)
+    regularization_params = [2**c for c in range(-10,11)]
+    #regularization_params.append(0)
     
     start = time.time()
     end = time.time()
@@ -568,6 +576,8 @@ def train_val_test(dataset, label, reg_type, test_size=.3):
     result['alpha'] = alpha
     result['split_portion'] = test_size
     result['reg_type'] = {'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko'}[reg_type]
+    result['label'] = label
+   
    
 
     return result
@@ -686,7 +696,7 @@ def plot_daily_data(kunta, label):
 
     l = labels[label].replace('_kum','')
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-dgit . %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
 
     
     figure = go.Figure(data = [
@@ -704,7 +714,9 @@ def plot_daily_data(kunta, label):
     figure.update_layout(yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                      exponentformat= "none", 
+                                                         separatethousands= True
                                      ),
                        title = dict(text = kunta+':<br>'+label+' päivittäin', x=.5, font=dict(size=24,family = 'Arial')),
                           template = 'seaborn',
@@ -774,7 +786,9 @@ def plot_monthly_data(kunta, label):
     figure.update_layout(yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                      exponentformat= "none", 
+                                                         separatethousands= True
                                      ),
                        title = dict(text = kunta+':<br>'+label+' kuukausittain', x=.5, font=dict(size=24,family = 'Arial')),
                           template = 'seaborn',
@@ -843,7 +857,9 @@ def plot_weekly_data(kunta, label):
     figure.update_layout(yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                      ),
                        title = dict(text = kunta+':<br>'+label+' viikoittain', x=.5, font=dict(size=24,family = 'Arial')),
                           template = 'seaborn',
@@ -911,7 +927,9 @@ def plot_quaterly_data(kunta, label):
     figure.update_layout(yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                  exponentformat= "none", 
+                                                         separatethousands= True
                                      ),
                        title = dict(text = kunta+':<br>'+label+' kvartaaleittain', x=.5, font=dict(size=24,family = 'Arial')),
                           template = 'seaborn',
@@ -977,7 +995,9 @@ def plot_yearly_data(kunta, label):
     figure.update_layout(yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                  exponentformat= "none", 
+                                                         separatethousands= True
                                      ),
                        title = dict(text = kunta+':<br>'+label+' vuosittain', x=.5, font=dict(size=24,family = 'Arial')),
                           template = 'seaborn',
@@ -1013,9 +1033,9 @@ def plot_yearly_data(kunta, label):
     return figure
                     
 # Visualisoidaan haluttu muuttuja kumulatiivisena.
-def plot_cum_data(kunta, label):
+def plot_cum_data(df, label):
     
-    df = get_cum_city_data(kunta)
+    kunta = df.kunta.values[0]
       
     l = labels[label]
     
@@ -1051,7 +1071,9 @@ def plot_cum_data(kunta, label):
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     )
                     )
     return figure    
@@ -1103,7 +1125,9 @@ def plot_daily_prediction(df):
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                           hoverlabel = dict(font_size = 16, font_family = 'Arial'),
                                           legend = dict(font=dict(size=18)),
@@ -1167,7 +1191,9 @@ def plot_weekly_prediction(df):
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                           hoverlabel = dict(font_size = 16, font_family = 'Arial'),
                                           legend = dict(font=dict(size=18)),
@@ -1234,7 +1260,9 @@ def plot_quaterly_prediction(df):
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                           hoverlabel = dict(font_size = 16, font_family = 'Arial'),
                                           legend = dict(font=dict(size=18)),
@@ -1300,7 +1328,9 @@ def plot_yearly_prediction(df):
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                           hoverlabel = dict(font_size = 16, font_family = 'Arial'),
                                           legend = dict(font=dict(size=18)),
@@ -1367,7 +1397,9 @@ def plot_monthly_prediction(df):
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                           legend = dict(font=dict(size=18)),
                                           height = 600,
@@ -1425,7 +1457,9 @@ def plot_cumulative_prediction(df):
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                           legend = dict(font=dict(size=18)),
                                           height = 600,
@@ -1505,12 +1539,14 @@ def plot_daily_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%-d.%-m.%Y',
+                                                       tickformat = '%B %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                         legend = dict(font=dict(size=18)),
                                         height = 600,
@@ -1593,12 +1629,14 @@ def plot_weekly_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%-d.%-m.%Y',
+                                                       tickformat = '%B %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),  
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                         legend = dict(font=dict(size=18)),
                                         height = 600,
@@ -1694,7 +1732,9 @@ def plot_monthly_test(df):
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                         legend = dict(font=dict(size=18)),
                                         height = 600,
@@ -1787,7 +1827,9 @@ def plot_yearly_test(df):
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                         legend = dict(font=dict(size=18)),
                                         height = 600,
@@ -1881,7 +1923,9 @@ def plot_quaterly_test(df):
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                         legend = dict(font=dict(size=18)),
                                         height = 600,
@@ -1966,7 +2010,9 @@ def plot_cumulative_test(df):
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                   font=dict(size=16, family = 'Arial Black')
                                                                  ),
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                     ),
                                             legend = dict(font=dict(size=18)),
                                             height = 600,
@@ -2066,66 +2112,28 @@ def serve_layout():
         
             dbc.Col(children = [
             
-                       html.H3('Valitse testi -ja validointidatan osuus.',style={'textAlign':'center', 'color':'black'}),
+                       html.H3('Valitse testi -ja validointidatan pituus.',style={'textAlign':'center', 'color':'black'}),
                        dcc.Slider(id = 'test_slider',
-                                 min = .1,
-                                 max = .15,
-                                 value = .15,
-                                 step = .01,
-                                 marks = {.1: {'label':'10 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          .15:{'label':'15 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                       #   .2:{'label':'20 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                       #   .3:{'label':'30 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                         # .5:{'label':'50 %', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
+                                 min = 10,
+                                 max = 150,
+                                 value = 70,
+                                 step = 1,
+                                 marks = {10: {'label':'10 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                        #  30:{'label':'kuukausi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          70: {'label':'70 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                        #  100:{'label':'100 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          150:{'label':'150 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          #200:{'label':'200 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
                                  ),
-                        
-                      html.Div(id = 'test_size_indicator', 
-                               children = [html.P('Valitsit {} prosentin osuuden.'.format(30),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})])
-            
-            
-            
+                      html.Br(),  
+                      html.Div(id = 'test_size_indicator') 
+
             
             ],xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
-            dbc.Col(xs =10, sm=8, md=5, lg=1, xl=1, align = 'center'),
-            dbc.Col(children = [
-                       html.Br(),
-                       html.H3('Valitse ennusteen pituus.',style={'textAlign':'center', 'color':'black'}),
-                       dcc.Slider(id = 'forecast_slider',
-                                 min = 30,
-                                 max = 120,
-                                 value = 90,
-                                 step = 1,
-                                 marks = {30: {'label':'kuukausi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          90: {'label':'kolme kuukautta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          120: {'label':'neljä kuukautta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                        #  180:{'label':'puoli vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                     #     365:{'label':'vuosi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                     #     2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                        #  4*365:{'label':'neljä vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
-
-                                          }
-                                 ),
-                       html.Br(),
-                       html.Div(id = 'forecast_slider_indicator', 
-                                children = [html.P('Valitsit {} päivän ennusteen.'.format(90),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})])
-            
-            
-            
-            
-            ],xs =10, sm=8, md=5, lg=6, xl=6, align = 'center')
-        
-        
-        ], style = {'margin' : '10px 10px 10px 10px'}),
-
-
-       
-        dbc.Row([ dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
-                  dbc.Col([
-                              
-                       html.H3('Valitse regularisointityyppi.',style={'textAlign':'center', 'color':'black'}),
-                       dcc.RadioItems(id = 'reg_type',
+            dbc.Col([html.H3('Valitse regularisointityyppi.',style={'textAlign':'center', 'color':'black'}),
+                    dcc.RadioItems(id = 'reg_type',
                                    options=[
                                        {'label': 'Ridge', 'value': 'Ridge'},
                                        {'label': 'Lasso', 'value': 'Lasso'},
@@ -2137,7 +2145,18 @@ def serve_layout():
                            
                                    style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}
                                 ),
-                      dbc.Button('Testaa ja ennusta',
+                    ],xs =10, sm=8, md=5, lg=3, xl=3, align = 'center'),
+
+        
+        
+        ], justify = 'center', style = {'margin' : '10px 10px 10px 10px'}),
+
+
+       
+        dbc.Row([ dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
+                  dbc.Col([
+
+                      dbc.Button('Testaa',
                                   id='start_button',
                                   n_clicks=0,
                                   outline=False,
@@ -2156,18 +2175,22 @@ def serve_layout():
         
         dbc.Tabs(children= [
             
-            dbc.Tab(label = 'Testi ja ennuste',
+            dbc.Tab(label = 'Tulokset',
                     tabClassName="flex-grow-1 text-center",
                     tab_style = {'font-size':28}, 
                     children = [
        
                         html.Br(),
-                        dcc.Loading(html.Div(id = 'results', style = {'margin' : '10px 10px 10px 10px'}),
+
+                        dcc.Loading(
+                            html.Div(id = 'results', style = {'margin' : '10px 10px 10px 10px'}),
                                    type = spinners[random.randint(0,len(spinners)-1)]),
                         html.Div(id = 'hidden_data_div',
                                  children= [
                                             dcc.Store(id='predict_store'),
                                             dcc.Store(id='test_store'),
+                                            dcc.Store(id='intermediate_store'),
+                                            dcc.Store(id = 'cum_data_store'),
                                             dcc.Download(id = "download-component")
                                            ]
                                  )
@@ -2193,7 +2216,7 @@ def serve_layout():
                                 html.Br(),
                                 html.P('Sovellus hyödyntää käyttäjän valitsemaa regularisointimallia. Valittavissa on Ridge, Lasso sekä niiden yhdistelmä, Elastinen verkko. Ohjelma optimoi algoritmin regularisointiparametrin ja suorittaa lopullisen ennusteen parhaalla mahdollisella algoritmilla. Regularisoinnista voi lukea lisää alla esitettyjen lähdeviittauksien kautta. Ohjelmassa on valittu viitearvoksi tavallinen lineaariregressio, joka muodostaa suoran vain edellisten päivien kumulatiivisten arvojen perusteella. Näin voidaan tarkastella pystyttiinkö monimutkaisemmalla mallinnuksella tuottamaan yksinkertaista mallia parempi ennuste.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('Ennusteen laatua pystyy tarkastelemaan vertailemalla toteutunutta dataa sekä testissä tehtyä ennustetta. Näin käyttäjä saa parempaa tietoa ennusteen luotettavuudesta.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('Ennusteen laatua pystyy tarkastelemaan vertailemalla toteutunutta dataa sekä testissä tehtyä ennustetta. Näin käyttäjä saa parempaa tietoa ennusteen luotettavuudesta. Tässä sovelluksessa data esitetään kuvaajilla, joiden aikafrekvenssiä voi säätää haluamakseen. Kuvaajien oikeassa yläkulmassa on työkaluja muun muassa kuvan tarkentamiseen sekä kuvatiedoston vientiin.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
                                 html.H4('Ohje',style={'textAlign':'center', 'color':'black'}),
                                 html.Br(),
@@ -2201,15 +2224,21 @@ def serve_layout():
                                 html.Br(),
                                 html.P('2. Valitse haluttu suure. Voit tarkastella suuretta eri ajanjaksoissa tai kumulatiivisesti.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),             
                                 html.Br(),
-                                html.P('3. Valitse testidatan osuus. Tästä puolet käytetään validointidatana. Validointidatan avulla koneoppimisalgoritmi valitsee hyperparametrit.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('3. Valitse validointi - ja testidatan pituus. Tästä puolet käytetään validointidatana, jonka avulla koneoppimisalgoritmi valitsee hyperparametrit. Toinen puoli käytetään testaamiseen.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('4. Valitse ennusteen pituus. Lopullinen algoritmi laskee ennusteen halutulle ajalle.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('4. Valitse regularisointityypiksi joko Ridge, Lasso tai Elastinen verkko.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('5. Valitse regularisointityypiksi joko Ridge, Lasso tai Elastinen verkko.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('5. Klikkaa "Testaa"-painiketta. Tämän jälkeen voit tarkastella testin tuloksia alle ilmestyvästä kuvaajasta.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('6. Klikkaa "testaa ja ennusta". Tämän jälkeen voit tarkastella testin tuloksia sekä tehtyä ennustetta halutulla ajanjaksolla.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('6. Analysoi testin tuloksia. Tuloksia voi tarkastella kuvaajalla eri aikayksiköittäin. Voit myös halutessasi toistaa aiemmat toimenpiteet eri lähtömuuttujilla.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('7. Tarkastele testi, -ja ennustetuloksia tai vie tulostiedosto Exceliin klikkaamalla "Lataa tiedosto koneelle" -painiketta.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('7. Valitse ennusteen pituus. Lopullinen algoritmi laskee ennusteen halutulle ajalle.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.Br(),
+                                html.P('8. Klikkaa ennusta. Alle ilmestyy kuvaaja, jossa on ennusteet valitulle ajalle.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.Br(),
+                                html.P('9. Tarkastele ennustetuloksia. Tulokset saa kuvaajaan valitun aikatiheyden mukaan.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.Br(),
+                                html.P('10. Halutessasi voit viedä tulostiedoston Exceliin klikkaamalla "Lataa tiedosto koneelle" -painiketta.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
                                 html.H4('Vastuuvapauslauseke',style={'textAlign':'center', 'color':'black'}),
                                 html.Br(),
@@ -2286,7 +2315,7 @@ def serve_layout():
 )
 def update_test_size_indicator(value):
     
-    return [html.P('Valitsit {} prosentin osuuden.'.format(int(round(100*value,1))),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})]
+    return [html.P('Valitsit {} päivää validointi -ja testidataksi.'.format(value),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})]
 
 @app.callback(
     Output('forecast_slider_indicator','children'),
@@ -2296,24 +2325,40 @@ def update_test_size_indicator(value):
     
     return [html.P('Valitsit {} päivän ennusteen.'.format(value),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})]
 
+
+@app.callback(
+    
+    
+    ServersideOutput('cum_data_store','data'),
+    [Input('kunta_dropdown','value')]
+)
+def store_cum_data(kunta):
+    
+    df = get_cum_city_data(kunta)
+    df['kunta'] = kunta
+    
+    return df
+    
+
 @app.callback(
     [Output('results','children'),
-    ServersideOutput('predict_store','data'),
-    ServersideOutput('test_store','data')],
+    ServersideOutput('test_store','data'),
+    ServersideOutput('intermediate_store','data')],
     [Input('start_button', 'n_clicks'),
-    State('kunta_dropdown','value'),
+     State('cum_data_store','data'),
     State('label_dropdown', 'value'),
      State('reg_type', 'value'),
-    State('test_slider', 'value'),
-    State('forecast_slider','value')]
+    State('test_slider', 'value')
+    ]
 )
-def start(n_clicks, kunta, label_name, reg_type, test, length):
+def start(n_clicks, cum_data, label_name, reg_type, test):
     
     if n_clicks > 0:
     
         label = labels[label_name]
+        kunta = cum_data.kunta.values[0]
 
-        dataset = shift_dates(dataset = get_cum_city_data(kunta), label = label)
+        dataset = shift_dates(dataset = cum_data, label = label)
 
         train_val_test_df = train_val_test(dataset, label, reg_type, test)
         
@@ -2324,70 +2369,6 @@ def start(n_clicks, kunta, label_name, reg_type, test, length):
         train_val_test_df['kunta'] = kunta
 
         alpha = train_val_test_df.alpha.dropna().values[0]
-
-        prediction = predict(dataset, label, length, alpha, reg_type)       
-
-        
-        baseline = predict(dataset, label, length, alpha, reg_type, baseline = True)
-        
-        prediction['daily'] = prediction[label] - prediction['edellinen']
-        prediction['name'] = label_name
-        prediction['kunta'] = kunta
-        
-        
-        baseline['daily'] = baseline[label] - baseline['edellinen']
-        
-        prediction['baseline'] = baseline[label]
-        prediction['daily_baseline'] = baseline['daily']
-        
-        
-        true_df = prediction[prediction.forecast=='Toteutunut']
-        pred_df = prediction[prediction.forecast=='Ennuste']
-        
-        
-        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
-    
-        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
-        
-        hover_baseline = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(pred_df))]
-    
-        
-
-        predict_fig = go.Figure(data =[
-
-            go.Scatter(x = true_df.index, 
-                       y = true_df[label], 
-                       name = 'Toteutunut', 
-                       hovertemplate = hover_true,
-                       marker = dict(color='green')),
-            go.Scatter(x = pred_df.index, 
-                       y = pred_df[label], 
-                       name = 'Ennuste ({})'.format({'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko'}[reg_type]), 
-                       hovertemplate = hover_pred,
-                       marker = dict(color='red')),
-            go.Scatter(x = pred_df.index, 
-                       y = pred_df['baseline'], 
-                       name = 'Ennuste (Lineaariregressio)', 
-                       hovertemplate = hover_baseline,
-                       marker = dict(color='blue'))
-
-        ],
-                       layout = go.Layout(xaxis = dict(title = dict(text='Aika',
-                                                                      font=dict(size=18, family = 'Arial Black')
-                                                                   ),
-                                                       tickfont = dict(size=14)), 
-                                          yaxis = dict(title = dict(text = label_name + ' (€)',
-                                                                   font=dict(size=16, family = 'Arial Black')
-                                                                   ),
-                                                       tickfont = dict(size=14)
-                                                      ),
-                                          legend = dict(font=dict(size=18)),
-                                          height = 600,
-                                          hoverlabel = dict(font_size = 16, font_family = 'Arial'),
-                                         title = dict(text = kunta+':<br>'+label_name+' kumulatiivisena (ennuste)', x=.5, font=dict(size=24,family = 'Arial'))
-                                          )
-                               )
-
 
         test_data = train_val_test_df[train_val_test_df.split=='test']
         val_data = train_val_test_df[train_val_test_df.split=='val']
@@ -2449,11 +2430,14 @@ def start(n_clicks, kunta, label_name, reg_type, test, length):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                      ),
                                                          tickfont = dict(size=14)
+                                                         
                                                         ),
                                         yaxis = dict(title = dict(text=label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
                                                                  ),
-                                                     tickfont = dict(size=14)
+                                                     tickfont = dict(size=14),
+                                                     exponentformat= "none", 
+                                                         separatethousands= True
                                                       ),
                                             legend = dict(font=dict(size=18)),
                                             height = 600,
@@ -2464,16 +2448,53 @@ def start(n_clicks, kunta, label_name, reg_type, test, length):
         frequency_options = [{'label':'Päivittäin','value':'D'},
                              {'label':'Viikoittain','value':'W'},
                              {'label':'Kuukausittain', 'value':'M'}]
+
+
         
-        if length >= 90:
-            frequency_options.append({'label':'Kvartaaleittain', 'value': 'Q'})
-        if length >= 365:
-            frequency_options.append({'label':'Vuosittain', 'value': 'Y'})
-        
-        frequency_options.append({'label':'Kumulatiivisena', 'value': 'KUM'})
-        
-        return [dbc.Row(justify='center',children=[
+        return [dbc.Row(children = [
+            
+                    dbc.Col(children = [
+                       html.Br(),
+                       html.H3('Valitse ennusteen pituus.',style={'textAlign':'center', 'color':'black'}),
+                       dcc.Slider(id = 'forecast_slider',
+                                 min = 30,
+                                 max = 2*365,
+                                 value = 90,
+                                 step = 1,
+                                 marks = {30: {'label':'kuukausi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                         # 90: {'label':'kolme kuukautta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                        #  120: {'label':'neljä kuukautta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                  #       180:{'label':'puoli vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                         365:{'label':'vuosi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                         2*365:{'label':' kaksi vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                       #  4*365:{'label':'neljä vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
+
+                                          }
+                                 ),
+                       html.Br(),
+                       html.Div(id = 'forecast_slider_indicator', 
+                                children = [html.P('Valitsit {} päivän ennusteen.'.format(90),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})])
+            
+            
+            
+            
+            ],xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
+                dbc.Col(children = [dbc.Button('Ennusta',
+                                  id='predict_button',
+                                  n_clicks=0,
+                                  outline=False,
+                                  className="btn btn-outline-info",
+                                  style = dict(fontSize=36)
+                                          )
+                                   ],xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'
+                         )
+             ],justify = 'left', style = {'margin' : '10px 10px 10px 10px'}
+                       ),
+
+                dbc.Row(justify='center',children=[
                     dbc.Col([html.Br(),
+                             html.Br(),
+                             html.Br(),
                              html.Br(),
                              html.Br(),
                              html.Br(),
@@ -2483,10 +2504,11 @@ def start(n_clicks, kunta, label_name, reg_type, test, length):
                                       color='dark',body=True),
                              html.P('λ = '+str(alpha)),
                              html.Br(),
-                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa oikean aikayksikön valinnan mukaan. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Sinisellä värillä on kuvattu tavallisen lineaariregression tulos. Tooltipissä on kuvattu ennustetarkkuus ja virhe niin ennusteelle kuin lineaariselle regressiollekin. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää siis testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa. Tulosexceliin saa koosteen lasketuista virheistä. Tässä kuvaajassa ennusteen ja toteutuneen eroa voi tarkastella paremmin aikayksiköittäin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})],
+                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa oikean aikayksikön valinnan mukaan. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Sinisellä värillä on kuvattu tavallisen lineaariregression tulos. Tooltipissä on kuvattu ennustetarkkuus ja virhe niin ennusteelle kuin lineaariselle regressiollekin. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää siis testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa. Tulosexceliin saa koosteen lasketuista virheistä. Tässä kuvaajassa ennusteen ja toteutuneen eroa voi tarkastella paremmin aikayksiköittäin. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})],
                             xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
                 
-                   dbc.Col([dbc.RadioItems(id = 'resampler', 
+                   dbc.Col(id = 'frequency_placeholder', children =
+                           [dbc.RadioItems(id = 'resampler', 
                                            options = frequency_options,
                                       className="form-group",
                                       inputClassName="form-check",
@@ -2500,38 +2522,148 @@ def start(n_clicks, kunta, label_name, reg_type, test, length):
                                 style = {'textAlign':'center'},
                                xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'
                                ),
-                
-               
-                
-                
-                   dbc.Col([dbc.Card(dcc.Graph(id = 'predict_fig', 
-                                               figure =predict_fig),
-                                     color='dark',
-                                     body=True),
-                           html.Br(),
-                           html.P('Tässä kuvaajassa esitetään itse ennuste, jota voi tarkastella, testitulosten tavoin halutulla aikayksiköllä. Punainen ja sininen käyrä ilmaisevat käytetyn ennustemallin sekä lineaarisen regression tekemiä ennusteita. Yleisesti ottaen, ennuste on kumulatiivisessa muodossaan tarkimmillaan ja heikoimillaan päiväkohtaisessa ennusteessa.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
-                           ],
+
+                   dbc.Col(id = 'predict_placeholder',
+
                            xs =10, sm=8, md=5, lg=5, xl=5, align = 'center')
-               ]),
+               ], style = {'margin' : '10px 10px 10px 10px'}),
                 dbc.Row(justify='center',children=[
                     
                     dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
-                    dbc.Col([
-                           dbc.Button(children=[
-                               html.I(className="fa fa-download mr-1"), ' Lataa tiedosto koneelle'],
-                                   id='download_button',
-                                   n_clicks=0,
-                                   outline=True,
-                                   size = 'lg',
-                                   color = 'light'
-                                   )
-                            ],xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'),
+                    dbc.Col(id = 'download_button_placeholder', 
+
+                            xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'),
                     dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center')
-                        ])
-               ],prediction,train_val_test_df
+                        ],style = {'margin' : '10px 10px 10px 10px'})
+               ], train_val_test_df, dataset
                 
     
+
+@app.callback(
+
+    [ServersideOutput('predict_store', 'data'),
+    Output('predict_placeholder', 'children'),
+    Output('resampler', 'options'),
+    Output('download_button_placeholder', 'children')],
+    [Input('predict_button','n_clicks'),
+    State('test_store', 'data'),
+    State('intermediate_store', 'data'),
+    State('forecast_slider','value')]
+
+)
+def predict_with_test_results(n_clicks, train_val_test, dataset, length):
     
+    if n_clicks > 0:
+    
+       
+
+        alpha = train_val_test.alpha.values[0]
+        reg_name = train_val_test.reg_type.values[0]
+        label = train_val_test.label.values[0]
+        kunta = train_val_test.kunta.values[0]  
+        label_name = train_val_test.name.values[0]
+
+        reg_type = {'Lasso':'Lasso','Ridge':'Ridge','Elastinen verkko':'ElasticNet'}[reg_name]
+
+
+
+        prediction = predict(dataset, label, length, alpha, reg_type)       
+
+
+        baseline = predict(dataset, label, length, alpha, reg_type, baseline = True)
+
+        prediction['daily'] = prediction[label] - prediction['edellinen']
+        prediction['name'] = label_name
+        prediction['kunta'] = kunta
+
+
+        baseline['daily'] = baseline[label] - baseline['edellinen']
+
+        prediction['baseline'] = baseline[label]
+        prediction['daily_baseline'] = baseline['daily']
+
+
+        true_df = prediction[prediction.forecast=='Toteutunut']
+        pred_df = prediction[prediction.forecast=='Ennuste']
+
+
+        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
+
+        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
+
+        hover_baseline = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(pred_df))]
+
+
+
+        predict_fig = go.Figure(data =[
+
+                go.Scatter(x = true_df.index, 
+                           y = true_df[label], 
+                           name = 'Toteutunut', 
+                           hovertemplate = hover_true,
+                           marker = dict(color='green')),
+                go.Scatter(x = pred_df.index, 
+                           y = pred_df[label], 
+                           name = 'Ennuste ({})'.format({'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko'}[reg_type]), 
+                           hovertemplate = hover_pred,
+                           marker = dict(color='red')),
+                go.Scatter(x = pred_df.index, 
+                           y = pred_df['baseline'], 
+                           name = 'Ennuste (Lineaariregressio)', 
+                           hovertemplate = hover_baseline,
+                           marker = dict(color='blue'))
+
+            ],
+                           layout = go.Layout(xaxis = dict(title = dict(text='Aika',
+                                                                          font=dict(size=18, family = 'Arial Black')
+                                                                       ),
+                                                           tickfont = dict(size=14)), 
+                                              yaxis = dict(title = dict(text = label_name + ' (€)',
+                                                                       font=dict(size=16, family = 'Arial Black')
+                                                                       ),
+                                                           tickfont = dict(size=14),
+                                                           exponentformat= "none", 
+                                                         separatethousands= True
+                                                          ),
+                                              legend = dict(font=dict(size=18)),
+                                              height = 600,
+                                              hoverlabel = dict(font_size = 16, font_family = 'Arial'),
+                                             title = dict(text = kunta+':<br>'+label_name+' kumulatiivisena (ennuste)', 
+                                                          x=.5, font=dict(size=24,family = 'Arial'))
+                                              )
+                                   )
+        frequency_options = [{'label':'Päivittäin','value':'D'},
+                                 {'label':'Viikoittain','value':'W'},
+                                 {'label':'Kuukausittain', 'value':'M'}]
+
+        if length >= 90:
+            frequency_options.append({'label':'Kvartaaleittain', 'value': 'Q'})
+        if length >= 365:
+            frequency_options.append({'label':'Vuosittain', 'value': 'Y'})
+
+        frequency_options.append({'label':'Kumulatiivisena', 'value': 'KUM'})
+
+
+
+        button_children = [
+                               dbc.Button(children=[
+                                   html.I(className="fa fa-download mr-1"), ' Lataa tiedosto koneelle'],
+                                       id='download_button',
+                                       n_clicks=0,
+                                       outline=True,
+                                       size = 'lg',
+                                       color = 'light'
+                                       )
+                                ]
+
+        predict_placeholder_children = [dbc.Card(dcc.Graph(id = 'predict_fig', 
+                                                   figure =predict_fig),
+                                         color='dark',
+                                         body=True),
+                               html.Br(),
+                               html.P('Tässä kuvaajassa esitetään itse ennuste, jota voi tarkastella, testitulosten tavoin halutulla aikayksiköllä. Punainen ja sininen käyrä ilmaisevat käytetyn ennustemallin sekä lineaarisen regression tekemiä ennusteita. Yleisesti ottaen, ennuste on kumulatiivisessa muodossaan tarkimmillaan ja heikoimillaan päiväkohtaisessa ennusteessa. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
+                               ]
+        return prediction, predict_placeholder_children,frequency_options, button_children
 
     
 @app.callback(
@@ -2542,6 +2674,7 @@ def start(n_clicks, kunta, label_name, reg_type, test, length):
 
 )
 def update_predict_graph(df, rs):
+    
     
     if rs is None or df is None:
         raise PreventUpdate
@@ -2607,7 +2740,7 @@ def update_daily_graph(kunta, rs, label):
                         body=False, 
                         color = 'dark'),
                 html.Br(),
-                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa päivittäin.',
+                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa päivittäin.Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.',
                        style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                ]
     elif rs == 'W':
@@ -2616,7 +2749,7 @@ def update_daily_graph(kunta, rs, label):
                         body=False, 
                         color = 'dark'),
                 html.Br(),
-                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa viikoittain.',
+                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa viikoittain. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.',
                        style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                ]
     elif rs == 'M':
@@ -2625,7 +2758,7 @@ def update_daily_graph(kunta, rs, label):
                         body=False, 
                         color = 'dark'),
                 html.Br(),
-                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa kuukausittain.',
+                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa kuukausittain. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.',
                        style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                ]
     elif rs == 'Q':
@@ -2634,7 +2767,7 @@ def update_daily_graph(kunta, rs, label):
                         body=False, 
                         color = 'dark'),
                 html.Br(),
-                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa kvartaaleittain.',
+                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa kvartaaleittain. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.',
                        style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                ]
     elif rs == 'Y':
@@ -2643,7 +2776,7 @@ def update_daily_graph(kunta, rs, label):
                         body=False, 
                         color = 'dark'),
                 html.Br(),
-                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa vuosittain.',
+                html.P('Tässä kuvaajassa voit tarkastella valittua muuttujaa vuosittain. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.',
                        style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                ]
      
@@ -2656,21 +2789,21 @@ def update_daily_graph(kunta, rs, label):
 
     Output('cumulative_graph_col', 'children'),
     
-    [Input('kunta_dropdown', 'value'),
+    [Input('cum_data_store', 'data'),
      Input('label_dropdown', 'value')
     ]
 
 )
-def update_cum_col(kunta, label):
+def update_cum_col(df, label):
     
-    figure = plot_cum_data(kunta, label)
+    figure = plot_cum_data(df, label)
     
     return html.Div([dbc.Card(dcc.Graph(id = 'cumulative_graph',
                                         figure = figure),
                               color='dark',
                               body=True),
                     html.Br(),
-                    html.P('Tässä kuvaajassa voit tarkastella valitun muuttujan kumulatiivista kehitystä.',
+                    html.P('Tässä kuvaajassa voit tarkastella valitun muuttujan kumulatiivista kehitystä. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.',
                           style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                     ])
 
@@ -2747,6 +2880,7 @@ def download(n_clicks, prediction, train_val_test):
                   'kunta',
                  'alpha',
                   'split',
+                  'label',
                   'Ennuste (Lineaariregressio)',
                   'Ennuste ({})'.format(reg_type),
                  'split_portion']
@@ -2755,7 +2889,7 @@ def download(n_clicks, prediction, train_val_test):
         val_data.drop(remove, axis=1, inplace=True)
 
         
-        test_data.drop(['split_portion', 'alpha','split','reg_type','name','kunta'],axis=1, inplace=True)
+        test_data.drop(['split_portion', 'alpha','split','reg_type','name','kunta','label'],axis=1, inplace=True)
                
         
         test_data['Absoluuttinen virhe'] = np.absolute(test_data[label] - test_data['Ennuste ({})'.format(reg_type)])        
@@ -2790,7 +2924,7 @@ def download(n_clicks, prediction, train_val_test):
         
         metadata = pd.DataFrame([{'Kunta':kunta,
                                  'Suure': label,
-                                 'Testi/validointiosuus': str(int(100*split_portion))+'%',
+                                 'Testi/validointiosuus': str(split_portion)+' päivää',
                                  'Regularisointisuure':alpha,
                                   'Regularisointityyppi': reg_type,
                                   'Testidatan pituus': str(len(test_data))+' päivää',
