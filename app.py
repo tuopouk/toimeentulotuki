@@ -39,6 +39,8 @@ heroku_threshold = {True:10*60, False:20}[in_dev]
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
 
+config_plots = {"locale":"fi","modeBarButtonsToRemove":["sendDataToCloud"]}
+
 features = ['edellinen', 
 
 
@@ -68,6 +70,8 @@ app = Dash(name = __name__,
 
 
 app.title = 'Toimeentulotuki Suomessa'
+
+app.scripts.append_script({"external_url": "https://cdn.plot.ly/plotly-locale-fi-latest.js"})
 
 # Haetaan Kelan toimeentulotukidata.
 def get_kela_data():
@@ -696,7 +700,7 @@ def plot_daily_data(kunta, label):
 
     l = labels[label].replace('_kum','')
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-dgit . %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d . %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
 
     
     figure = go.Figure(data = [
@@ -2501,6 +2505,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                              html.Br(),
                              html.Br(),
                              dbc.Card(dcc.Graph(id = 'train_val_test_fig', 
+                                                config=config_plots,
                                                 figure =train_val_test_fig),
                                       color='dark',body=True),
                              html.P('λ = '+str(alpha)),
@@ -2658,6 +2663,7 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
                                 ]
 
         predict_placeholder_children = [dbc.Card(dcc.Graph(id = 'predict_fig', 
+                                                           config=config_plots,
                                                    figure =predict_fig),
                                          color='dark',
                                          body=True),
@@ -2737,6 +2743,7 @@ def update_daily_graph(kunta, rs, label):
     
     if rs == 'D':
         return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
+                                                 config=config_plots,
                                                 figure = plot_daily_data(kunta,label))]),
                         body=False, 
                         color = 'dark'),
@@ -2746,6 +2753,7 @@ def update_daily_graph(kunta, rs, label):
                ]
     elif rs == 'W':
         return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
+                                                 config=config_plots,
                                                 figure = plot_weekly_data(kunta,label))]),
                         body=False, 
                         color = 'dark'),
@@ -2755,6 +2763,7 @@ def update_daily_graph(kunta, rs, label):
                ]
     elif rs == 'M':
         return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
+                                                 config=config_plots,
                                                 figure = plot_monthly_data(kunta,label))]),
                         body=False, 
                         color = 'dark'),
@@ -2764,6 +2773,7 @@ def update_daily_graph(kunta, rs, label):
                ]
     elif rs == 'Q':
         return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
+                                                 config=config_plots,
                                                 figure = plot_quaterly_data(kunta,label))]),
                         body=False, 
                         color = 'dark'),
@@ -2773,6 +2783,7 @@ def update_daily_graph(kunta, rs, label):
                ]
     elif rs == 'Y':
         return [dbc.Card(dbc.CardBody([dcc.Graph(id = 'original_graph',
+                                                 config=config_plots,
                                                 figure = plot_yearly_data(kunta,label))]),
                         body=False, 
                         color = 'dark'),
@@ -2800,6 +2811,7 @@ def update_cum_col(df, label):
     figure = plot_cum_data(df, label)
     
     return html.Div([dbc.Card(dcc.Graph(id = 'cumulative_graph',
+                                        config=config_plots,
                                         figure = figure),
                               color='dark',
                               body=True),
