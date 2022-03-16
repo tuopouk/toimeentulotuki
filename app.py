@@ -888,7 +888,7 @@ def plot_quaterly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                   tickformat='%-m / %Y',
+                                  # tickformat='%-m / %Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
@@ -957,7 +957,7 @@ def plot_yearly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                   tickformat='%-m / %Y',
+                                #   tickformat='%-m / %Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
