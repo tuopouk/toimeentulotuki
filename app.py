@@ -1497,8 +1497,9 @@ def plot_daily_test(df):
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / daily_true), 2)
 
 
+
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i],
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %-Bta %Y'),
         '{:,}'.format(round(daily_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(daily_test[i],2)).replace(',',' '),
@@ -1588,7 +1589,7 @@ def plot_weekly_test(df):
 
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(weekly_test.index[i],
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(weekly_test.index[i].strftime('%-d. %-Bta %Y'),
         '{:,}'.format(round(weekly_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(weekly_test[i],2)).replace(',',' '),
