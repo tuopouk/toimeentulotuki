@@ -24,9 +24,13 @@ import holidays
 from tqdm import tqdm
 import time
 import locale
+import warnings
+warnings.filterwarnings("ignore")
 locale.setlocale(locale.LC_ALL, 'fi_FI')
 
 pd.set_option('use_inf_as_na', True)
+
+
 
 # Käänteisen etäisyyden normalisointi.
 distance_baseline = .75
@@ -39,7 +43,9 @@ heroku_threshold = {True:10*60, False:20}[in_dev]
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
 
-config_plots = {"locale":"fi","modeBarButtonsToRemove":["sendDataToCloud"]}
+config_plots = {"locale":"fi",
+                "modeBarButtonsToRemove":["sendDataToCloud"],
+               "displaylogo":False}
 
 features = ['edellinen', 
 
@@ -135,136 +141,72 @@ käänteinen etäisyys on yksi, ja etäisyyden ollessa 1, kännteinen etäiysyys
 ollessa yksi tai nolla.
 
 """
-def is_first_bdate(date):
-    
+
+
+
+def get_holidays(years):
+    return [k.strftime('%Y-%m-%d') for k in holidays.FIN(years=years).keys()]
+
+
+def next_first_bdate(date):
     
     date = pd.to_datetime(date)
-    
-    if not is_bdate(date):
-        return False
-
-    else:
-        base_date = pd.to_datetime(str(pd.to_datetime(date).year)+'-'+str(pd.to_datetime(date).month))
-        
-        while base_date < date:
-            if is_bdate(base_date):
-                return False
-            base_date = base_date + pd.Timedelta(days=1)
-    return True
+    target = pd.to_datetime('{}-{}-01'.format(date.year,date.month))
+    if date > target:
+        target += pd.DateOffset(months=1)
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='forward', holidays = get_holidays([target.year])))
 
 
-def next_first_pay_day(date):  
+def next_second_bdate(date):
     
-    while not is_first_bdate(date):
-        
-        date += pd.Timedelta(days=1)
+    date = pd.to_datetime(date)
+    target = pd.to_datetime('{}-{}-09'.format(date.year,date.month))
+    if date > target:
+        target += pd.DateOffset(months=1)
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
     
-    return date
+def next_third_bdate(date):
+    
+    date = pd.to_datetime(date)
+    target = pd.to_datetime('{}-{}-16'.format(date.year,date.month))
+    if date > target:
+        target += pd.DateOffset(months=1)
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+
+def next_fourth_bdate(date):
+    
+    date = pd.to_datetime(date)
+    target = pd.to_datetime('{}-{}-23'.format(date.year,date.month))
+    if date > target:
+        target += pd.DateOffset(months=1)
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+
+def bdates_in_between(date1,date2):
+    date1 = pd.to_datetime(date1)
+    date2 = pd.to_datetime(date2)
+    return np.busday_count(date1.strftime('%Y-%m-%d'),date2.strftime('%Y-%m-%d'), holidays = get_holidays([date1.year,date2.year]))
+
+def inverse_distance(date1, date2):
+    
+    distance = bdates_in_between(date1,date2)
+    
+    return {True: 1.0, False: distance_baseline / distance}[distance == 0]
 
 def first_pay_day_distance(date):
     
-    pay_day = next_first_pay_day(date)
-    distance = (pay_day - date).days
-    try:
-        inverse_distance = distance_baseline/distance        
-    except:
-        inverse_distance = 1.0
-    return inverse_distance
-
-    
-def next_second_pay_day(date):
-    
-    if date.day == 9 and is_bdate(date):
-        return date
-    
-    this_month = date.strftime('%m')
-    this_year = date.strftime('%Y')
-    pay_day = pd.to_datetime(this_year+'-'+this_month+'-09')
-
-    if date > pay_day:
-        pay_day = pay_day+pd.Timedelta(days=23)
-        pay_day = pd.to_datetime(pay_day.strftime('%Y-%m')+'-09')
-
-        
-    while not is_bdate(pay_day):
-        
-        pay_day -= pd.Timedelta(days=1)
-    
-    return pay_day
+    return inverse_distance(date, next_first_bdate(date))
 
 def second_pay_day_distance(date):
     
-    pay_day = next_second_pay_day(date)
-    days_in_month = pd.Period(date.strftime('%Y-%m-%d')).days_in_month
-    distance = (pay_day - date).days
-    try:
-        inverse_distance = distance_baseline/distance        
-    except:
-        inverse_distance = 1.0
-    return inverse_distance
-
-
-def next_third_pay_day(date):
-    
-    if date.day == 16 and is_bdate(date):
-        return date
-    
-    this_month = date.strftime('%m')
-    this_year = date.strftime('%Y')
-    pay_day = pd.to_datetime(this_year+'-'+this_month+'-16')
-
-    if date > pay_day:
-        pay_day = pay_day+pd.Timedelta(days=16)
-        pay_day = pd.to_datetime(pay_day.strftime('%Y-%m')+'-16')
-
-        
-    while not is_bdate(pay_day):
-        
-        pay_day -= pd.Timedelta(days=1)
-    
-    return pay_day
+    return inverse_distance(date, next_second_bdate(date))
 
 def third_pay_day_distance(date):
     
-    pay_day = next_third_pay_day(date)
-    days_in_month = pd.Period(date.strftime('%Y-%m-%d')).days_in_month
-    distance = (pay_day - date).days
-    try:
-        inverse_distance = distance_baseline/distance        
-    except:
-        inverse_distance = 1.0
-    return inverse_distance
-
-def next_fourth_pay_day(date):
-    
-    if date.day == 23 and is_bdate(date):
-        return date
-    
-    this_month = date.strftime('%m')
-    this_year = date.strftime('%Y')
-    pay_day = pd.to_datetime(this_year+'-'+this_month+'-23')
-
-    if date > pay_day:
-        pay_day = pay_day+pd.Timedelta(days=15)
-        pay_day = pd.to_datetime(pay_day.strftime('%Y-%m')+'-23')
-
-        
-    while not is_bdate(pay_day):
-        
-        pay_day -= pd.Timedelta(days=1)
-    
-    return pay_day
+    return inverse_distance(date, next_third_bdate(date))
 
 def fourth_pay_day_distance(date):
     
-    pay_day = next_fourth_pay_day(date)
-    days_in_month = pd.Period(date.strftime('%Y-%m-%d')).days_in_month
-    distance = (pay_day - date).days
-    try:
-        inverse_distance = distance_baseline/distance        
-    except:
-        inverse_distance = 1.0
-    return inverse_distance
+    return inverse_distance(date, next_fourth_bdate(date))
 
 
 # Hae kunnan data kumulatiivisena.
@@ -1500,8 +1442,8 @@ def plot_daily_test(df):
     baseline_error = daily_baseline - daily_true
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / daily_true), 2)
 
-
-
+    
+    
     
     hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %-Bta %Y'),
         '{:,}'.format(round(daily_true[i],2)).replace(',',' '),
@@ -1544,7 +1486,7 @@ def plot_daily_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%B %Y',
+                                                       tickformat = '%-d.%-m %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1634,7 +1576,7 @@ def plot_weekly_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%B %Y',
+                                                       tickformat = '%-d.%-m %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
