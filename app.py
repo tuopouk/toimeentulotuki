@@ -69,8 +69,8 @@ app = Dash(name = __name__,
            prevent_initial_callbacks = False, 
            server = server,
            external_scripts = ["https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-locale-fi.js"],
-           meta_tags = [{'name':'viewport',
-                        'content':'width=device-width, initial_scale=1.0, maximum_scale=1.2, minimum_scale=0.5'}],
+          # meta_tags = [{'name':'viewport',
+                   #     'content':'width=device-width, initial_scale=1.0, maximum_scale=1.2, minimum_scale=0.5'}],
            external_stylesheets = external_stylesheets
           )
 
@@ -2015,7 +2015,7 @@ def serve_layout():
 
                        html.Br()
 
-                    ],xs =10, sm=8, md=5, lg=4, xl=4, align = 'center'),
+                    ],xs =12, sm=12, md=5, lg=4, xl=4, align = 'center'),
                 
                   
                    
@@ -2035,16 +2035,16 @@ def serve_layout():
                        html.Br(),
 
                        html.Br(),
-                   ],xs =10, sm=8, md=5, lg=8, xl=8)
-                ], style = {'margin' : '10px 10px 10px 10px'}),
+                   ],xs =12, sm=12, md=5, lg=8, xl=8)
+                ],justify = 'center', style = {'margin' : '10px 10px 10px 10px'}),
         
 
         dbc.Row(children = [
         
-            dbc.Col(id = 'original_graph_col',xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
+            dbc.Col(id = 'original_graph_col',xs =12, sm=12, md=12, lg=5, xl=5, align = 'start'),
             
 
-                        dbc.Col([dbc.RadioItems(id = 'orig_resampler', 
+            dbc.Col([dbc.RadioItems(id = 'orig_resampler', 
                                       options = [{'label':'Päivittäin','value':'D'}, 
                                                  {'label':'Viikoittain','value':'W'},
                                                  {'label':'Kuukausittain', 'value':'M'}, 
@@ -2059,18 +2059,21 @@ def serve_layout():
                                       
                                       value = 'D',
                                      labelStyle={'font-size':22, 'display':'block'}
-                                     )
+                                     ),
+                    html.Br(),
                                 ],
                                 style = {'textAlign':'center'},
-                               xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'
+                               xs =12, sm=12, md=12, lg=2, xl=2, align = 'center'
                                ),
 
             
-              dbc.Col(id = 'cumulative_graph_col',xs =10, sm=8, md=5, lg=5, xl=5, align = 'center')
+              dbc.Col(id = 'cumulative_graph_col',xs =12, sm=12, md=12, lg=5, xl=5, align = 'start')
         
         
         
-        ], style = {'margin' : '10px 10px 10px 10px'}),
+        ],justify = 'center', style = {'margin' : '10px 10px 10px 10px'}),
+        
+        html.Br(),
         
         
         dbc.Row(children = [
@@ -2078,6 +2081,7 @@ def serve_layout():
             dbc.Col(children = [
             
                        html.H3('Valitse testi -ja validointidatan pituus.',style={'textAlign':'center', 'color':'black'}),
+                       html.Br(),
                        dcc.Slider(id = 'test_slider',
                                  min = 10,
                                  max = 150,
@@ -2096,8 +2100,10 @@ def serve_layout():
                       html.Div(id = 'test_size_indicator') 
 
             
-            ],xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
+            ],xs =12, sm=12, md=12, lg=6, xl=6, align = 'start'),
+            
             dbc.Col([html.H3('Valitse regularisointityyppi.',style={'textAlign':'center', 'color':'black'}),
+                     html.Br(),
                     dcc.RadioItems(id = 'reg_type',
                                    options=[
                                        {'label': 'Ridge', 'value': 'Ridge'},
@@ -2110,7 +2116,7 @@ def serve_layout():
                            
                                    style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}
                                 ),
-                    ],xs =10, sm=8, md=5, lg=3, xl=3, align = 'center'),
+                    ],xs =12, sm=12, md=12, lg=6, xl=6, align = 'start'),
 
         
         
@@ -2118,7 +2124,7 @@ def serve_layout():
 
 
        
-        dbc.Row([ dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
+        dbc.Row([ dbc.Col(xs =5, sm=5, md=5, lg=5, xl=5, align = 'start'),
                   dbc.Col([
 
                       dbc.Button('Testaa',
@@ -2127,9 +2133,10 @@ def serve_layout():
                                   outline=False,
                                   className="btn btn-outline-info",
                                   style = dict(fontSize=36)
-                                  )],
-                          xs =10, sm=8, md=5, lg=2, xl=2, align = 'start'),
-                  dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center')  
+                                  )
+                  ],
+                          xs =2, sm=2, md=2, lg=2, xl=2, align = 'center'),
+                  dbc.Col(xs =5, sm=5, md=5, lg=5, xl=5, align = 'end')  
 
                         
                     
@@ -2163,13 +2170,13 @@ def serve_layout():
                     
 
                                    ),
-            dbc.Tab(label = 'Ohje',
+            dbc.Tab(label = 'Ohje ja esittely',
                    tabClassName="flex-grow-1 text-center",                    
                    tab_style = {'font-size':28},
                    children = [ 
                        dbc.Row(justify='center', children=[
                        
-                           dbc.Col(xs =10, sm=8, md=5, lg=6, xl=6, children =[
+                           dbc.Col(xs =12, sm=12, md=5, lg=6, xl=6, children =[
                    
 
                                 html.Br(),
@@ -2280,7 +2287,7 @@ def serve_layout():
 )
 def update_test_size_indicator(value):
     
-    return [html.P('Valitsit {} päivää validointi -ja testidataksi.'.format(value),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})]
+    return [html.P('Valitsit {} päivää validointi -ja testidataksi.'.format(value),style = {'textAlign':'center', 'fontSize':20, 'fontFamily':'Arial Black', 'color':'black'})]
 
 @app.callback(
     Output('forecast_slider_indicator','children'),
@@ -2288,7 +2295,7 @@ def update_test_size_indicator(value):
 )
 def update_test_size_indicator(value):
     
-    return [html.P('Valitsit {} päivän ennusteen.'.format(value),style = {'textAlign':'center', 'fontSize':24, 'fontFamily':'Arial Black', 'color':'black'})]
+    return [html.P('Valitsit {} päivän ennusteen.'.format(value),style = {'textAlign':'center', 'fontSize':20, 'fontFamily':'Arial Black', 'color':'black'})]
 
 
 @app.callback(
@@ -2418,7 +2425,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
         frequency_options.append({'label':'Kumulatiivisena', 'value': 'KUM'})
         
         return [dbc.Row(children = [
-            
+                    dbc.Col(xs =12, sm=12, md=12, lg=3, xl=3, align = 'start'),
                     dbc.Col(children = [
                        html.Br(),
                        html.H3('Valitse ennusteen pituus.',style={'textAlign':'center', 'color':'black'}),
@@ -2444,35 +2451,42 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
             
             
             
-            ],xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
-                dbc.Col(children = [dbc.Button('Ennusta',
+                        ],xs =12, sm=12, md=12, lg=6, xl=6, align = 'start'),
+                    dbc.Col(xs =12, sm=12, md=12, lg=3, xl=3, align = 'start'),
+            
+        ],justify = 'center', style = {'margin' : '10px 10px 10px 10px'}),
+                
+            html.Br(),    
+            dbc.Row([
+                    dbc.Col(xs =5, sm=5, md=5, lg=5, xl=5, align = 'start'),
+                    dbc.Col(children = [dbc.Button('Ennusta',
                                   id='predict_button',
                                   n_clicks=0,
                                   outline=False,
                                   className="btn btn-outline-info",
                                   style = dict(fontSize=36)
                                           )
-                                   ],xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'
-                         )
-             ],justify = 'left', style = {'margin' : '10px 10px 10px 10px'}
-                       ),
+                                   ],xs =2, sm=2, md=2, lg=2, xl=2, align = 'center'
+                         ),
+                    dbc.Col(xs =5, sm=5, md=5, lg=5, xl=5, align = 'end')
+            
+                 ],justify = 'center', style = {'margin' : '10px 10px 10px 10px'}
+             ),
+                
+            html.Br(),
 
-                dbc.Row(justify='center',children=[
-                    dbc.Col([html.Br(),
-                             html.Br(),
-                             html.Br(),
-                             html.Br(),
-                             html.Br(),
-                             html.Br(),
-                             html.Br(),
+            dbc.Row(children=[
+                    dbc.Col([
+
                              dbc.Card(dcc.Graph(id = 'train_val_test_fig', 
                                                 config=config_plots,
                                                 figure =train_val_test_fig),
                                       color='dark',body=True),
                              html.P('λ = '+str(alpha)),
                              html.Br(),
-                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa oikean aikayksikön valinnan mukaan. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Sinisellä värillä on kuvattu tavallisen lineaariregression tulos. Tooltipissä on kuvattu ennustetarkkuus ja virhe niin ennusteelle kuin lineaariselle regressiollekin. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää siis testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa. Tulosexceliin saa koosteen lasketuista virheistä. Tässä kuvaajassa ennusteen ja toteutuneen eroa voi tarkastella paremmin aikayksiköittäin. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})],
-                            xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
+                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa oikean aikayksikön valinnan mukaan. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Sinisellä värillä on kuvattu tavallisen lineaariregression tulos. Tooltipissä on kuvattu ennustetarkkuus ja virhe niin ennusteelle kuin lineaariselle regressiollekin. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää siis testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa. Tulosexceliin saa koosteen lasketuista virheistä. Tässä kuvaajassa ennusteen ja toteutuneen eroa voi tarkastella paremmin aikayksiköittäin. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
+                        ],xs =12, sm=12, md=12, lg=5, xl=5, align = 'start'
+                    ),
                 
                    dbc.Col(id = 'frequency_placeholder', children =
                            [dbc.RadioItems(id = 'resampler', 
@@ -2484,24 +2498,28 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                                       
                                       value = None,
                                      labelStyle={'font-size':22, 'display':'block'}
-                                     )
+                                     ),
+                            html.Br()
                                 ],
                                 style = {'textAlign':'center'},
-                               xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'
+                               xs =12, sm=12, md=12, lg=2, xl=2, align = 'start'
                                ),
 
                    dbc.Col(id = 'predict_placeholder',
 
-                           xs =10, sm=8, md=5, lg=5, xl=5, align = 'center')
-               ], style = {'margin' : '10px 10px 10px 10px'}),
-                dbc.Row(justify='center',children=[
+                           xs =12, sm=12, md=12, lg=5, xl=5, align = 'start')
+               ],justify='center', style = {'margin' : '10px 10px 10px 10px'}),
+                
+                html.Br(),
+                
+                dbc.Row(children=[
                     
-                    dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center'),
+                    dbc.Col(xs =4, sm=4, md=5, lg=4, xl=4, align = 'start'),
                     dbc.Col(id = 'download_button_placeholder', 
 
-                            xs =10, sm=8, md=5, lg=2, xl=2, align = 'center'),
-                    dbc.Col(xs =10, sm=8, md=5, lg=5, xl=5, align = 'center')
-                        ],style = {'margin' : '10px 10px 10px 10px'})
+                            xs =3, sm=3, md=3, lg=3, xl=3, align = 'center'),
+                    dbc.Col(xs =4, sm=4, md=4, lg=4, xl=4, align = 'end')
+                        ],justify='center', style = {'margin' : '10px 10px 10px 10px'})
                ], train_val_test_df, dataset
                 
     
@@ -2621,7 +2639,8 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
                                        n_clicks=0,
                                        outline=True,
                                        size = 'lg',
-                                       color = 'light'
+                                       color = 'light',
+                                       style={'color':'black','font-family':'Arial','font-size':20}
                                        )
                                 ]
 
