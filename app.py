@@ -2084,15 +2084,16 @@ def serve_layout():
                        html.Br(),
                        dcc.Slider(id = 'test_slider',
                                  min = 10,
-                                 max = 150,
-                                 value = 70,
+                                 max = 365,
+                                 value = 100,
                                  step = 1,
                                  marks = {10: {'label':'10 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
                                         #  30:{'label':'kuukausi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          70: {'label':'70 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                        #  100:{'label':'100 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          150:{'label':'150 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
-                                          #200:{'label':'200 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
+                                        #  70: {'label':'70 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          100:{'label':'100 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                         # 150:{'label':'150 päivää', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          180:{'label':'puoli vuotta', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}},
+                                          365:{'label':'vuosi', 'style':{'font-size':20, 'fontFamily':'Arial Black','color':'black'}}
 
                                           }
                                  ),
