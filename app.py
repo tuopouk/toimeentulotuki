@@ -145,7 +145,7 @@ ollessa yksi tai nolla.
 
 
 def get_holidays(years):
-    return [k.strftime('%Y-%m-%d') for k in holidays.FIN(years=years).keys()]
+    return [k.strftime('%Y-%m-%-d') for k in holidays.FIN(years=years).keys()]
 
 
 def next_first_bdate(date):
@@ -154,7 +154,7 @@ def next_first_bdate(date):
     target = pd.to_datetime('{}-{}-01'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='forward', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='forward', holidays = get_holidays([target.year])))
 
 
 def next_second_bdate(date):
@@ -163,7 +163,7 @@ def next_second_bdate(date):
     target = pd.to_datetime('{}-{}-09'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='preceding', holidays = get_holidays([target.year])))
     
 def next_third_bdate(date):
     
@@ -171,7 +171,7 @@ def next_third_bdate(date):
     target = pd.to_datetime('{}-{}-16'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='preceding', holidays = get_holidays([target.year])))
 
 def next_fourth_bdate(date):
     
@@ -179,18 +179,25 @@ def next_fourth_bdate(date):
     target = pd.to_datetime('{}-{}-23'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='preceding', holidays = get_holidays([target.year])))
 
 def bdates_in_between(date1,date2):
     date1 = pd.to_datetime(date1)
     date2 = pd.to_datetime(date2)
-    return np.busday_count(date1.strftime('%Y-%m-%d'),date2.strftime('%Y-%m-%d'), holidays = get_holidays([date1.year,date2.year]))
+    return np.busday_count(date1.strftime('%Y-%m-%-d'),date2.strftime('%Y-%m-%-d'), holidays = get_holidays([date1.year,date2.year]))
 
 def inverse_distance(date1, date2):
     
     distance = bdates_in_between(date1,date2)
-    
     return {True: 1.0, False: distance_baseline / distance}[distance == 0]
+#     if distance == 0:
+#         return 1.0
+#     elif distance == 1:
+#         return distance_baseline
+#     else:
+#         return 1.0 / distance
+    
+    
 
 def first_pay_day_distance(date):
     
@@ -642,7 +649,7 @@ def plot_daily_data(kunta, label):
 
     l = labels[label].replace('_kum','')
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d . %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d . %-Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
 
     
     figure = go.Figure(data = [
@@ -716,7 +723,7 @@ def plot_monthly_data(kunta, label):
     
     df = df.resample('M')[l].sum()
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%B %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-B %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
     
     figure = go.Figure(data = [
                             go.Scatter(x = df.index,
@@ -788,7 +795,7 @@ def plot_weekly_data(kunta, label):
     
     df = df.resample('W')[l].sum()
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
     
     figure = go.Figure(data = [
                             go.Scatter(x = df.index,
@@ -990,7 +997,7 @@ def plot_cum_data(df, label):
       
     l = labels[label]
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
     
     figure = go.Figure(data = [
     
@@ -1042,11 +1049,11 @@ def plot_daily_prediction(df):
     kunta = df.kunta.values[0]
     reg_type = df.regularisointi.values[0]
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(daily_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(daily_true.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(daily_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_pred.values[i],2)).replace(',',' ')) for i in range(len(daily_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(daily_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(daily_pred.values[i],2)).replace(',',' ')) for i in range(len(daily_pred))]
     
-    hover_baseline = ['<b>{}</b>:<br>{} €'.format(daily_baseline.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_baseline.values[i],2)).replace(',',' ')) for i in range(len(daily_baseline))]
+    hover_baseline = ['<b>{}</b>:<br>{} €'.format(daily_baseline.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(daily_baseline.values[i],2)).replace(',',' ')) for i in range(len(daily_baseline))]
     
     figure = go.Figure(data = [
                             
@@ -1113,11 +1120,11 @@ def plot_weekly_prediction(df):
     kunta = df.kunta.values[0]
     reg_type = df.regularisointi.values[0]
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(weekly_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_pred.values[i],2)).replace(',',' ')) for i in range(len(weekly_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(weekly_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(weekly_pred.values[i],2)).replace(',',' ')) for i in range(len(weekly_pred))]
     
-    hover_baseline = ['<b>{}</b>:<br>{} €'.format(weekly_baseline.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_baseline.values[i],2)).replace(',',' ')) for i in range(len(weekly_baseline))]
+    hover_baseline = ['<b>{}</b>:<br>{} €'.format(weekly_baseline.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(weekly_baseline.values[i],2)).replace(',',' ')) for i in range(len(weekly_baseline))]
     
     figure = go.Figure(data = [
                             
@@ -1311,9 +1318,9 @@ def plot_monthly_prediction(df):
     monthly_pred = daily_pred.resample('M').sum()     
     monthly_baseline = daily_baseline.resample('M').sum()  
                        
-    monthly_true.index = [i.strftime('%B %Y')  for i in monthly_true.index]
-    monthly_pred.index = [i.strftime('%B %Y') for i in monthly_pred.index]
-    monthly_baseline.index = [i.strftime('%B %Y') for i in monthly_baseline.index]
+    monthly_true.index = [i.strftime('%-B %Y')  for i in monthly_true.index]
+    monthly_pred.index = [i.strftime('%-B %Y') for i in monthly_pred.index]
+    monthly_baseline.index = [i.strftime('%-B %Y') for i in monthly_baseline.index]
                        
     label = df.name.values[0]
     kunta = df.kunta.values[0]
@@ -1382,11 +1389,11 @@ def plot_cumulative_prediction(df):
     df_true = df[df.forecast=='Toteutunut']
     df_pred = df[df.forecast=='Ennuste']
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(df_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_true.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(df_true.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df_true.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_pred.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df_pred.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_pred))]
     
-    hover_baseline = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_pred.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(df_pred))]
+    hover_baseline = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df_pred.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(df_pred))]
     
     
     figure = go.Figure(data = [
@@ -1470,7 +1477,7 @@ def plot_daily_test(df):
         round(test_error_percentage[i],2),
         '{:,}'.format(round(baseline_error[i],2)).replace(',',' '),
         round(baseline_error_percentage[i],2)
-        ) for i in range(len(test_data))]
+        ) for i in range(len(daily_test))]
 
         
         
@@ -1479,7 +1486,7 @@ def plot_daily_test(df):
                 go.Bar(x = daily_true.index, 
                        y = daily_true.values, 
                        name = 'Testidata',
-                       hovertemplate = ['{}:<br>{} €'.format(daily_true.index[i].strftime('%-d. %Bta %Y'),
+                       hovertemplate = ['{}:<br>{} €'.format(daily_true.index[i].strftime('%-d. %-Bta %Y'),
                                                           '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))],
                        marker = dict(color='green')),
                 go.Scatter(x = daily_test.index, 
@@ -1569,7 +1576,7 @@ def plot_weekly_test(df):
                 go.Bar(x = weekly_true.index, 
                        y = weekly_true.values, 
                        name = 'Testidata',
-                       hovertemplate = ['{}:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %Bta %Y'),
+                       hovertemplate = ['{}:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %-Bta %Y'),
                                                           '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))],
                        marker = dict(color='green')),
                 go.Scatter(x = weekly_test.index, 
@@ -1634,16 +1641,16 @@ def plot_monthly_test(df):
     monthly_true = daily_true.resample('M').sum()
     monthly_baseline = daily_baseline.resample('M').sum()
           
-    test_error = monthly_true - monthly_test
+    test_error = monthly_test - monthly_true
     test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / monthly_true), 2)
 
-    baseline_error = monthly_true - monthly_baseline
+    baseline_error = monthly_baseline - monthly_true
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / monthly_true), 2)
 
 
-    monthly_true.index = [i.strftime('%B %Y')  for i in monthly_true.index]
-    monthly_test.index = [i.strftime('%B %Y') for i in monthly_test.index]
-    monthly_baseline.index = [i.strftime('%B %Y') for i in monthly_baseline.index]
+    monthly_true.index = [i.strftime('%-B %Y')  for i in monthly_true.index]
+    monthly_test.index = [i.strftime('%-B %Y') for i in monthly_test.index]
+    monthly_baseline.index = [i.strftime('%-B %Y') for i in monthly_baseline.index]
     
     hover_true = ['{}:<br>{} €'.format(monthly_true.index[i],
                                                           '{:,}'.format(round(monthly_true.values[i],2)).replace(',',' ')) for i in range(len(monthly_true))]
@@ -1731,10 +1738,10 @@ def plot_yearly_test(df):
     yearly_true = daily_true.resample('Y').sum()
     yearly_baseline = daily_baseline.resample('Y').sum()   
          
-    test_error = yearly_true - yearly_test
+    test_error =  yearly_test - yearly_true
     test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / yearly_true), 2)
     
-    baseline_error = yearly_true - yearly_baseline
+    baseline_error = yearly_baseline - yearly_true
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / yearly_true), 2)
 
 
@@ -1825,10 +1832,10 @@ def plot_quaterly_test(df):
     quaterly_baseline = daily_baseline.resample('Q').sum()
 
     
-    test_error = quaterly_true - quaterly_test
+    test_error = quaterly_test - quaterly_true
     test_error_percentage = np.round( 100 * (1 - np.absolute(test_error) / quaterly_true), 2)
     
-    baseline_error = quaterly_true - quaterly_baseline
+    baseline_error =  quaterly_baseline - quaterly_true
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / quaterly_true), 2)
 
     
@@ -1918,7 +1925,7 @@ def plot_cumulative_test(df):
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / test_data[label]), 2)
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
         '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),
@@ -1937,20 +1944,20 @@ def plot_cumulative_test(df):
                 go.Scatter(x = train_data.index, 
                            y = train_data[label], 
                            name = 'Opetusdata', 
-                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %-Bta %Y'),
                                                              '{:,}'.format(round(train_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(train_data))],
                            marker = dict(color = 'purple')),
                 go.Scatter(x = val_data.index, 
                            y = val_data[label], 
                            name = 'Validointidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %-Bta %Y'),
                                                              '{:,}'.format(round(val_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(val_data))],
                            marker = dict(color = 'orange')),
 
                 go.Scatter(x = test_data.index, 
                            y = test_data[label], 
                            name = 'Testidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
                                                              '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(test_data))],
                            marker = dict(color='green')),
                 go.Scatter(x = test_data.index, 
@@ -2353,7 +2360,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
         baseline_error = test_data.baseline - test_data[label]
         baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / test_data[label]), 2)
 
-        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
+        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
         '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),
@@ -2369,20 +2376,20 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                 go.Scatter(x = train_data.index, 
                            y = train_data[label], 
                            name = 'Opetusdata',
-                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %-Bta %Y'),
                                                              '{:,}'.format(round(train_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(train_data))],
                            marker = dict(color = 'purple')),
                 go.Scatter(x = val_data.index, 
                            y = val_data[label], 
                            name = 'Validointidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %-Bta %Y'),
                                                              '{:,}'.format(round(val_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(val_data))],
                            marker = dict(color = 'orange')),
 
                 go.Scatter(x = test_data.index, 
                            y = test_data[label], 
                            name = 'Testidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
                                                              '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(test_data))],
                            marker = dict(color='green')),
             
@@ -2573,11 +2580,11 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
         pred_df = prediction[prediction.forecast=='Ennuste']
 
 
-        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
+        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
 
-        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
+        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
 
-        hover_baseline = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(pred_df))]
+        hover_baseline = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(pred_df.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(pred_df))]
 
 
 
@@ -2958,7 +2965,7 @@ def download(n_clicks, prediction, train_val_test):
         
         output = xlsx_io.getvalue()
 
-        return dcc.send_bytes(output, kunta+'_'+label+'_'+datetime.now().strftime('%d_%m_%Y')+'.xlsx')
+        return dcc.send_bytes(output, kunta+'_'+label+'_'+datetime.now().strftime('%-d_%m_%Y')+'.xlsx')
 
 
 
