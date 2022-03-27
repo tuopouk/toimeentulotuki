@@ -145,7 +145,7 @@ ollessa yksi tai nolla.
 
 
 def get_holidays(years):
-    return [k.strftime('%Y-%m-%-d') for k in holidays.FIN(years=years).keys()]
+    return [k.strftime('%Y-%m-%d') for k in holidays.FIN(years=years).keys()]
 
 
 def next_first_bdate(date):
@@ -154,7 +154,7 @@ def next_first_bdate(date):
     target = pd.to_datetime('{}-{}-01'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='forward', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='forward', holidays = get_holidays([target.year])))
 
 
 def next_second_bdate(date):
@@ -163,7 +163,7 @@ def next_second_bdate(date):
     target = pd.to_datetime('{}-{}-09'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
     
 def next_third_bdate(date):
     
@@ -171,7 +171,7 @@ def next_third_bdate(date):
     target = pd.to_datetime('{}-{}-16'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
 
 def next_fourth_bdate(date):
     
@@ -179,12 +179,12 @@ def next_fourth_bdate(date):
     target = pd.to_datetime('{}-{}-23'.format(date.year,date.month))
     if date > target:
         target += pd.DateOffset(months=1)
-    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%-d'), 0, roll='preceding', holidays = get_holidays([target.year])))
+    return pd.to_datetime(np.busday_offset(target.strftime('%Y-%m-%d'), 0, roll='preceding', holidays = get_holidays([target.year])))
 
 def bdates_in_between(date1,date2):
     date1 = pd.to_datetime(date1)
     date2 = pd.to_datetime(date2)
-    return np.busday_count(date1.strftime('%Y-%m-%-d'),date2.strftime('%Y-%m-%-d'), holidays = get_holidays([date1.year,date2.year]))
+    return np.busday_count(date1.strftime('%Y-%m-%d'),date2.strftime('%Y-%m-%d'), holidays = get_holidays([date1.year,date2.year]))
 
 def inverse_distance(date1, date2):
     
