@@ -398,8 +398,11 @@ def train_val_test(dataset, label, reg_type, test_size = 100):
     # Alpha saa arvoja väliltä [2**-10, 2**10].
     # Alphaa sanotaan useimmin lambdaksi. Scikit-learnissa se on kuitenkin alpha.
     
+    
     regularization_params = [2**c for c in range(-10,11)]
-    #regularization_params.append(0)
+    regularization_params.append(0)
+    
+    regularization_params = sorted(regularization_params)
     
     start = time.time()
     end = time.time()
