@@ -400,61 +400,64 @@ def train_val_test(dataset, label, reg_type, test_size = 100):
     
     
     regularization_params = [2**c for c in range(-10,11)]
-    regularization_params.append(0)
+    #regularization_params.append(0)
     
-    regularization_params = sorted(regularization_params)
+    #regularization_params = sorted(regularization_params)
     
     start = time.time()
     end = time.time()
     
+    if reg_type != 'LinearRegression':
     
-    for alpha in tqdm(regularization_params):
-        
-        # Jos on kestänyt alle threshold-arvon, jatka.
-        if end - start < heroku_threshold:
-            model = {'Lasso':Lasso(random_state=42, alpha = alpha),
-                 'Ridge': Ridge(random_state=42, alpha = alpha),
-                 'ElasticNet': ElasticNet(alpha=alpha, l1_ratio=0.5, random_state=42)}[reg_type]
-            scl = StandardScaler()
+        for alpha in tqdm(regularization_params):
 
-            x_train = train_data[features]
-            X_train = scl.fit_transform(x_train)
-            y_train = train_data[label]
+            # Jos on kestänyt alle threshold-arvon, jatka.
+            if end - start < heroku_threshold:
+                model = {'Lasso':Lasso(random_state=42, alpha = alpha),
+                     'Ridge': Ridge(random_state=42, alpha = alpha),
+                     'ElasticNet': ElasticNet(alpha=alpha, l1_ratio=0.5, random_state=42)}[reg_type]
+                scl = StandardScaler()
 
-            model.fit(X_train,y_train)
-            df[label] = np.maximum(df.edellinen,model.predict(scl.transform(df[features])))
+                x_train = train_data[features]
+                X_train = scl.fit_transform(x_train)
+                y_train = train_data[label]
 
-
-            dfs = []
-            dfs.append(df)
-
-            days = len(val_data)
-                       
-
-            for i in range(1,days):
-
-                dff = dfs[-1].copy()
-
-                dff.edellinen = dff[label]
-                dff[label] = np.nan
-                next_day = val_data.index.values[i]
-                dff['maksu_pv'] = next_day
-                dff = dff.set_index('maksu_pv')
-                dff['first_pay_day_distance'] = dff.reset_index().apply(lambda x: first_pay_day_distance(x['maksu_pv']),axis=1).values
-                dff['second_pay_day_distance'] = dff.reset_index().apply(lambda x: second_pay_day_distance(x['maksu_pv']),axis=1).values
-                dff['third_pay_day_distance'] = dff.reset_index().apply(lambda x: third_pay_day_distance(x['maksu_pv']),axis=1).values
-                dff['fourth_pay_day_distance'] = dff.reset_index().apply(lambda x: fourth_pay_day_distance(x['maksu_pv']),axis=1).values
+                model.fit(X_train,y_train)
+                df[label] = np.maximum(df.edellinen,model.predict(scl.transform(df[features])))
 
 
-                dff[label] = np.maximum(dff.edellinen,model.predict(scl.transform(dff[features])))
-                dfs.append(dff)
-            error = np.absolute(val_data.iloc[-1][label]-pd.concat(dfs).iloc[-1][label])
-            alpha_list.append({'alpha':alpha, 'error':error})
-            
-            end = time.time()
-        else:
-            break
-            
+                dfs = []
+                dfs.append(df)
+
+                days = len(val_data)
+
+
+                for i in range(1,days):
+
+                    dff = dfs[-1].copy()
+
+                    dff.edellinen = dff[label]
+                    dff[label] = np.nan
+                    next_day = val_data.index.values[i]
+                    dff['maksu_pv'] = next_day
+                    dff = dff.set_index('maksu_pv')
+                    dff['first_pay_day_distance'] = dff.reset_index().apply(lambda x: first_pay_day_distance(x['maksu_pv']),axis=1).values
+                    dff['second_pay_day_distance'] = dff.reset_index().apply(lambda x: second_pay_day_distance(x['maksu_pv']),axis=1).values
+                    dff['third_pay_day_distance'] = dff.reset_index().apply(lambda x: third_pay_day_distance(x['maksu_pv']),axis=1).values
+                    dff['fourth_pay_day_distance'] = dff.reset_index().apply(lambda x: fourth_pay_day_distance(x['maksu_pv']),axis=1).values
+
+
+                    dff[label] = np.maximum(dff.edellinen,model.predict(scl.transform(dff[features])))
+                    dfs.append(dff)
+                error = np.absolute(val_data.iloc[-1][label]-pd.concat(dfs).iloc[-1][label])
+                alpha_list.append({'alpha':alpha, 'error':error})
+
+                end = time.time()
+            else:
+                break
+    else:
+        alpha_list.append({'alpha':0, 'error':0})
+
             
       
     alpha = pd.DataFrame(alpha_list).sort_values(by='error').head(1).alpha.values[0]
@@ -466,7 +469,8 @@ def train_val_test(dataset, label, reg_type, test_size = 100):
     #model = Lasso(random_state=42, alpha = alpha)
     model = {'Lasso':Lasso(random_state=42, alpha = alpha),
                  'Ridge': Ridge(random_state=42, alpha = alpha),
-                 'ElasticNet': ElasticNet(alpha=alpha, l1_ratio=0.5, random_state=42)}[reg_type]
+                 'ElasticNet': ElasticNet(alpha=alpha, l1_ratio=0.5, random_state=42),
+            'LinearRegression':LinearRegression(n_jobs=-1)}[reg_type]
     scl = StandardScaler()
 
     x_train = train_data[features]
@@ -531,7 +535,7 @@ def train_val_test(dataset, label, reg_type, test_size = 100):
     result = pd.concat([train_data_prev, val_data, test_data])
     result['alpha'] = alpha
     result['split_portion'] = test_size
-    result['reg_type'] = {'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko'}[reg_type]
+    result['reg_type'] = {'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko', 'LinearRegression': 'Ei regularisointia'}[reg_type]
     result['label'] = label
    
    
@@ -550,7 +554,8 @@ def predict(dataset, label, length, alpha, reg_type, baseline = False):
         
         model = {'Lasso':Lasso(random_state=42, alpha = alpha),
                  'Ridge': Ridge(random_state=42, alpha = alpha),
-                 'ElasticNet': ElasticNet(alpha=alpha, l1_ratio=0.5, random_state=42)}[reg_type]
+                 'ElasticNet': ElasticNet(alpha=alpha, l1_ratio=0.5, random_state=42),
+                'LinearRegression':LinearRegression(n_jobs=-1)}[reg_type]
     
 
         features_ = features
@@ -619,7 +624,7 @@ def predict(dataset, label, length, alpha, reg_type, baseline = False):
     
     result_df['ennusteen_pituus'] = length
     
-    result_df['regularisointi'] = {'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko'}[reg_type]
+    result_df['regularisointi'] = {'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko', 'LinearRegression':'Ei regularisointia'}[reg_type]
     
     return result_df
 
@@ -652,7 +657,7 @@ def plot_daily_data(kunta, label):
 
     l = labels[label].replace('_kum','')
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d . %-Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
 
     
     figure = go.Figure(data = [
@@ -683,7 +688,7 @@ def plot_daily_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                  tickformat='%-d.%-m %Y',
+                                  tickformat='%-d.%-m. %Y',
                             rangeselector=dict(
                                 buttons=list([
                                     dict(count=1,
@@ -726,7 +731,7 @@ def plot_monthly_data(kunta, label):
     
     df = df.resample('M')[l].sum()
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-B %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%B %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
     
     figure = go.Figure(data = [
                             go.Scatter(x = df.index,
@@ -756,7 +761,7 @@ def plot_monthly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                  tickformat='%-m / %Y',
+                                  tickformat='%m / %Y',
                             rangeselector=dict(
                                 buttons=list([
                                     dict(count=1,
@@ -798,7 +803,7 @@ def plot_weekly_data(kunta, label):
     
     df = df.resample('W')[l].sum()
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.values[i],2)).replace(',',' ')) for i in range(len(df))]
     
     figure = go.Figure(data = [
                             go.Scatter(x = df.index,
@@ -828,7 +833,7 @@ def plot_weekly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                  tickformat='%-d.%-m %Y',
+                                  tickformat='%-d.%-m. %Y',
                             rangeselector=dict(
                                 buttons=list([
                                     dict(count=1,
@@ -898,7 +903,7 @@ def plot_quaterly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                  # tickformat='%-m / %Y',
+                                  # tickformat='%m / %Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
@@ -967,7 +972,7 @@ def plot_yearly_data(kunta, label):
                                                 font=dict(size=18, family = 'Arial Black')
                                                ),
                                    tickfont = dict(size=14),
-                                #   tickformat='%-m / %Y',
+                                #   tickformat='%m / %Y',
                                                 
                             rangeselector=dict(
                                 buttons=list([
@@ -1000,7 +1005,7 @@ def plot_cum_data(df, label):
       
     l = labels[label]
     
-    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
+    hovertemplate = ['<b>{}</b>:<br>{} €'.format(df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df.iloc[i][l],2)).replace(',',' ')) for i in range(len(df))]
     
     figure = go.Figure(data = [
     
@@ -1028,7 +1033,7 @@ def plot_cum_data(df, label):
                                                      font=dict(size=18, family = 'Arial Black')
                                                     ),
                                         tickfont = dict(size=14),
-                                       tickformat='%-d.%-m %Y',
+                                       tickformat='%-d.%-m. %Y',
                                         ),
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1052,11 +1057,11 @@ def plot_daily_prediction(df):
     kunta = df.kunta.values[0]
     reg_type = df.regularisointi.values[0]
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(daily_true.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(daily_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(daily_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(daily_pred.values[i],2)).replace(',',' ')) for i in range(len(daily_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(daily_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_pred.values[i],2)).replace(',',' ')) for i in range(len(daily_pred))]
     
-    hover_baseline = ['<b>{}</b>:<br>{} €'.format(daily_baseline.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(daily_baseline.values[i],2)).replace(',',' ')) for i in range(len(daily_baseline))]
+    hover_baseline = ['<b>{}</b>:<br>{} €'.format(daily_baseline.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(daily_baseline.values[i],2)).replace(',',' ')) for i in range(len(daily_baseline))]
     
     figure = go.Figure(data = [
                             
@@ -1083,7 +1088,7 @@ def plot_daily_prediction(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat='%-d.%-m %Y',
+                                                       tickformat='%-d.%-m. %Y',
 #                                                        rangeslider=dict(visible=True),
 #                                                        type='date'
                                                        
@@ -1123,11 +1128,11 @@ def plot_weekly_prediction(df):
     kunta = df.kunta.values[0]
     reg_type = df.regularisointi.values[0]
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(weekly_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(weekly_pred.values[i],2)).replace(',',' ')) for i in range(len(weekly_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(weekly_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_pred.values[i],2)).replace(',',' ')) for i in range(len(weekly_pred))]
     
-    hover_baseline = ['<b>{}</b>:<br>{} €'.format(weekly_baseline.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(weekly_baseline.values[i],2)).replace(',',' ')) for i in range(len(weekly_baseline))]
+    hover_baseline = ['<b>{}</b>:<br>{} €'.format(weekly_baseline.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(weekly_baseline.values[i],2)).replace(',',' ')) for i in range(len(weekly_baseline))]
     
     figure = go.Figure(data = [
                             
@@ -1154,7 +1159,7 @@ def plot_weekly_prediction(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat='%-d.%-m %Y',
+                                                       tickformat='%-d.%-m. %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1321,9 +1326,9 @@ def plot_monthly_prediction(df):
     monthly_pred = daily_pred.resample('M').sum()     
     monthly_baseline = daily_baseline.resample('M').sum()  
                        
-    monthly_true.index = [i.strftime('%-B %Y')  for i in monthly_true.index]
-    monthly_pred.index = [i.strftime('%-B %Y') for i in monthly_pred.index]
-    monthly_baseline.index = [i.strftime('%-B %Y') for i in monthly_baseline.index]
+    monthly_true.index = [i.strftime('%B %Y')  for i in monthly_true.index]
+    monthly_pred.index = [i.strftime('%B %Y') for i in monthly_pred.index]
+    monthly_baseline.index = [i.strftime('%B %Y') for i in monthly_baseline.index]
                        
     label = df.name.values[0]
     kunta = df.kunta.values[0]
@@ -1392,11 +1397,11 @@ def plot_cumulative_prediction(df):
     df_true = df[df.forecast=='Toteutunut']
     df_pred = df[df.forecast=='Ennuste']
     
-    hover_true = ['<b>{}</b>:<br>{} €'.format(df_true.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df_true.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_true))]
+    hover_true = ['<b>{}</b>:<br>{} €'.format(df_true.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_true.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_true))]
     
-    hover_pred = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df_pred.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_pred))]
+    hover_pred = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_pred.iloc[i][label],2)).replace(',',' ')) for i in range(len(df_pred))]
     
-    hover_baseline = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(df_pred.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(df_pred))]
+    hover_baseline = ['<b>{}</b>:<br>{} €'.format(df_pred.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(df_pred.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(df_pred))]
     
     
     figure = go.Figure(data = [
@@ -1423,7 +1428,7 @@ def plot_cumulative_prediction(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat='%-d.%-m %Y',
+                                                       tickformat='%-d.%-m. %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1471,7 +1476,7 @@ def plot_daily_test(df):
     
     
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %-Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(daily_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(daily_test[i],2)).replace(',',' '),
@@ -1489,7 +1494,7 @@ def plot_daily_test(df):
                 go.Bar(x = daily_true.index, 
                        y = daily_true.values, 
                        name = 'Testidata',
-                       hovertemplate = ['{}:<br>{} €'.format(daily_true.index[i].strftime('%-d. %-Bta %Y'),
+                       hovertemplate = ['{}:<br>{} €'.format(daily_true.index[i].strftime('%-d. %Bta %Y'),
                                                           '{:,}'.format(round(daily_true.values[i],2)).replace(',',' ')) for i in range(len(daily_true))],
                        marker = dict(color='green')),
                 go.Scatter(x = daily_test.index, 
@@ -1512,7 +1517,7 @@ def plot_daily_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%-d.%-m %Y',
+                                                       tickformat = '%-d.%-m. %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1561,7 +1566,7 @@ def plot_weekly_test(df):
 
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(weekly_test.index[i].strftime('%-d. %-Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(weekly_test.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(weekly_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(weekly_test[i],2)).replace(',',' '),
@@ -1579,7 +1584,7 @@ def plot_weekly_test(df):
                 go.Bar(x = weekly_true.index, 
                        y = weekly_true.values, 
                        name = 'Testidata',
-                       hovertemplate = ['{}:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %-Bta %Y'),
+                       hovertemplate = ['{}:<br>{} €'.format(weekly_true.index[i].strftime('%-d. %Bta %Y'),
                                                           '{:,}'.format(round(weekly_true.values[i],2)).replace(',',' ')) for i in range(len(weekly_true))],
                        marker = dict(color='green')),
                 go.Scatter(x = weekly_test.index, 
@@ -1602,7 +1607,7 @@ def plot_weekly_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                       tickformat = '%-d.%-m %Y',
+                                                       tickformat = '%-d.%-m. %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                  font=dict(size=16, family = 'Arial Black')
@@ -1651,9 +1656,9 @@ def plot_monthly_test(df):
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / monthly_true), 2)
 
 
-    monthly_true.index = [i.strftime('%-B %Y')  for i in monthly_true.index]
-    monthly_test.index = [i.strftime('%-B %Y') for i in monthly_test.index]
-    monthly_baseline.index = [i.strftime('%-B %Y') for i in monthly_baseline.index]
+    monthly_true.index = [i.strftime('%B %Y')  for i in monthly_true.index]
+    monthly_test.index = [i.strftime('%B %Y') for i in monthly_test.index]
+    monthly_baseline.index = [i.strftime('%B %Y') for i in monthly_baseline.index]
     
     hover_true = ['{}:<br>{} €'.format(monthly_true.index[i],
                                                           '{:,}'.format(round(monthly_true.values[i],2)).replace(',',' ')) for i in range(len(monthly_true))]
@@ -1928,7 +1933,7 @@ def plot_cumulative_test(df):
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / test_data[label]), 2)
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),
@@ -1947,20 +1952,20 @@ def plot_cumulative_test(df):
                 go.Scatter(x = train_data.index, 
                            y = train_data[label], 
                            name = 'Opetusdata', 
-                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %-Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(train_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(train_data))],
                            marker = dict(color = 'purple')),
                 go.Scatter(x = val_data.index, 
                            y = val_data[label], 
                            name = 'Validointidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %-Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(val_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(val_data))],
                            marker = dict(color = 'orange')),
 
                 go.Scatter(x = test_data.index, 
                            y = test_data[label], 
                            name = 'Testidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(test_data))],
                            marker = dict(color='green')),
                 go.Scatter(x = test_data.index, 
@@ -1979,7 +1984,7 @@ def plot_cumulative_test(df):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                    ),
                                                        tickfont = dict(size=14),
-                                                         tickformat='%-d.%-m %Y',
+                                                         tickformat='%-d.%-m. %Y',
                                                         ),
                                         yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                   font=dict(size=16, family = 'Arial Black')
@@ -2119,7 +2124,8 @@ def serve_layout():
                                    options=[
                                        {'label': 'Ridge', 'value': 'Ridge'},
                                        {'label': 'Lasso', 'value': 'Lasso'},
-                                       {'label': 'Elastinen verkko', 'value': 'ElasticNet'}
+                                       {'label': 'Elastinen verkko', 'value': 'ElasticNet'},
+                                       {'label': 'Ei regularisointia', 'value': 'LinearRegression'}
                                    ],
                                    value='Lasso',
                                    labelStyle={'display':'inline-block', 'padding':'10px'},
@@ -2197,7 +2203,7 @@ def serve_layout():
                                 html.Br(),
                                 html.P('Sovelluksen avulla voidaan testata eri lineaarisen regression varianttien toimivuutta toimeentulotuen maksusuoritusten ennustamiseen. Ennustaminen tapahtuu muodostamalla halutun suureen kumulatiivinen aikasarja, joka useimmiten paljastuu lineaariseksi. Ennustamalla kumulatiivista arvoa, saadaan päiväkohtainen arvo vähentämällä saadusta kumulatiivisesta arvosta edellisen päivän kumulatiivinen arvo. Päiväkohtaiset ennusteet voidaan taas summata eri ajanjaksoittain, esimerkiksi kvartaaleittain. Ennusteen piirteinä hyödynnetään edeltävän päivän kumulatiivista arvoa sekä ajallista etäisyyttä nykyhetken ja tulevan maksupäivän välillä (päivissä). Tarkemmin sanoen, käytössä on etäisyyden käänteisluku, jolla pyritään mallintamaan läheisyyttä maksupäivään suuremmilla luvuilla. Jos esimerkiksi seuraava maksupäivä on kolmen päivän päästä, on käänteinen etäisyys 1/3. Etäisyyden ollessa nolla (on maksupäivä), käänteinen etäisyys on suurin ja saa arvo yksi. Lisäksi käänteinen etäisyys on normalisoitu kertomalla yhdestä poikkeavat luvut kertoimella {}, jotta saadaan tehtyä ero käänteiselle etäisyydelle, kun etäisyys on yksi tai nolla.'.format(distance_baseline),style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('Sovellus hyödyntää käyttäjän valitsemaa regularisointimallia. Valittavissa on Ridge, Lasso sekä niiden yhdistelmä, Elastinen verkko. Ohjelma optimoi algoritmin regularisointiparametrin ja suorittaa lopullisen ennusteen parhaalla mahdollisella algoritmilla. Regularisoinnista voi lukea lisää alla esitettyjen lähdeviittauksien kautta. Ohjelmassa on valittu viitearvoksi tavallinen lineaariregressio, joka muodostaa suoran vain edellisten päivien kumulatiivisten arvojen perusteella. Näin voidaan tarkastella pystyttiinkö monimutkaisemmalla mallinnuksella tuottamaan yksinkertaista mallia parempi ennuste.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('Sovellus hyödyntää käyttäjän valitsemaa regularisointimallia. Valittavissa on Ridge, Lasso sekä niiden yhdistelmä, Elastinen verkko. Ohjelma optimoi algoritmin regularisointiparametrin ja suorittaa lopullisen ennusteen parhaalla mahdollisella algoritmilla. Regularisoinnista voi lukea lisää alla esitettyjen lähdeviittauksien kautta. On myös mahdollista valita regressio ilman regularisointia. Ohjelmassa on valittu viitearvoksi tavallinen lineaariregressio, joka muodostaa suoran vain edellisten päivien kumulatiivisten arvojen perusteella. Näin voidaan tarkastella pystyttiinkö monimutkaisemmalla mallinnuksella tuottamaan yksinkertaista mallia parempi ennuste.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
                                 html.P('Ennusteen laatua pystyy tarkastelemaan vertailemalla toteutunutta dataa sekä testissä tehtyä ennustetta. Näin käyttäjä saa parempaa tietoa ennusteen luotettavuudesta. Tässä sovelluksessa data esitetään kuvaajilla, joiden aikafrekvenssiä voi säätää haluamakseen. Kuvaajien oikeassa yläkulmassa on työkaluja muun muassa kuvan tarkentamiseen sekä kuvatiedoston vientiin.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
@@ -2363,7 +2369,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
         baseline_error = test_data.baseline - test_data[label]
         baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / test_data[label]), 2)
 
-        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
+        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),
@@ -2379,20 +2385,20 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                 go.Scatter(x = train_data.index, 
                            y = train_data[label], 
                            name = 'Opetusdata',
-                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %-Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(train_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(train_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(train_data))],
                            marker = dict(color = 'purple')),
                 go.Scatter(x = val_data.index, 
                            y = val_data[label], 
                            name = 'Validointidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %-Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(val_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(val_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(val_data))],
                            marker = dict(color = 'orange')),
 
                 go.Scatter(x = test_data.index, 
                            y = test_data[label], 
                            name = 'Testidata', 
-                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %-Bta %Y'),
+                           hovertemplate = ['{}:<br>{} €'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
                                                              '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' ')) for i in range(len(test_data))],
                            marker = dict(color='green')),
             
@@ -2404,7 +2410,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                  
                 go.Scatter(x = test_data.index, 
                            y = test_data.ennustettu, 
-                           name = 'Ennuste ({})'.format({'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko'}[reg_type]),
+                           name = 'Ennuste ({})'.format({'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko','LinearRegression':'Ei regularisointia'}[reg_type]),
                            hovertemplate=hovertemplate, 
                            marker = dict(color='red')),
 
@@ -2413,7 +2419,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                                                                       font=dict(size=18, family = 'Arial Black')
                                                                      ),
                                                          tickfont = dict(size=14),
-                                                         tickformat='%-d.%-m %Y'
+                                                         tickformat='%-d.%-m. %Y'
                                                          
                                                         ),
                                         yaxis = dict(title = dict(text=label_name + ' (€)',
@@ -2559,7 +2565,7 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
         kunta = train_val_test.kunta.values[0]  
         label_name = train_val_test.name.values[0]
 
-        reg_type = {'Lasso':'Lasso','Ridge':'Ridge','Elastinen verkko':'ElasticNet'}[reg_name]
+        reg_type = {'Lasso':'Lasso','Ridge':'Ridge','Elastinen verkko':'ElasticNet', 'Ei regularisointia':'LinearRegression'}[reg_name]
 
 
 
@@ -2583,11 +2589,11 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
         pred_df = prediction[prediction.forecast=='Ennuste']
 
 
-        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
+        hover_true = ['<b>{}</b>:<br>{} €'.format(true_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(true_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(true_df))]
 
-        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
+        hover_pred = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i][label],2)).replace(',',' ')) for i in range(len(pred_df))]
 
-        hover_baseline = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %-Bta %Y'), '{:,}'.format(round(pred_df.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(pred_df))]
+        hover_baseline = ['<b>{}</b>:<br>{} €'.format(pred_df.index[i].strftime('%-d. %Bta %Y'), '{:,}'.format(round(pred_df.iloc[i]['baseline'],2)).replace(',',' ')) for i in range(len(pred_df))]
 
 
 
@@ -2600,7 +2606,7 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
                            marker = dict(color='green')),
                 go.Scatter(x = pred_df.index, 
                            y = pred_df[label], 
-                           name = 'Ennuste ({})'.format({'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko'}[reg_type]), 
+                           name = 'Ennuste ({})'.format({'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko','LinearRegression':'Ei regularisointia'}[reg_type]), 
                            hovertemplate = hover_pred,
                            marker = dict(color='red')),
                 go.Scatter(x = pred_df.index, 
@@ -2614,7 +2620,7 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
                                                                           font=dict(size=18, family = 'Arial Black')
                                                                        ),
                                                            tickfont = dict(size=14),
-                                                          tickformat='%-d.%-m %Y'
+                                                          tickformat='%-d.%-m. %Y'
                                                           ), 
                                               yaxis = dict(title = dict(text = label_name + ' (€)',
                                                                        font=dict(size=16, family = 'Arial Black')
