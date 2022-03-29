@@ -39,7 +39,7 @@ distance_baseline = .75
 in_dev = False
 
 # Kuinka monta sekuntia saa metodi kestää. Tarvitaan herokua varten.
-heroku_threshold = {True:10*60, False:20}[in_dev]
+heroku_threshold = {True:10*60, False:15}[in_dev]
 
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
 
