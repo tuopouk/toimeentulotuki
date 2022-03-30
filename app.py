@@ -27,6 +27,7 @@ import locale
 import warnings
 warnings.filterwarnings("ignore")
 locale.setlocale(locale.LC_ALL, 'fi_FI')
+#locale.setlocale(locale.LC_ALL, 'fi-FI')
 
 pd.set_option('use_inf_as_na', True)
 
@@ -44,7 +45,15 @@ heroku_threshold = {True:10*60, False:15}[in_dev]
 spinners = ['graph', 'cube', 'circle', 'dot' ,'default']
 
 config_plots = {"locale":"fi",
+                # 'editable'              : True,
                 "modeBarButtonsToRemove":["sendDataToCloud"],
+                "modeBarButtonsToAdd":['drawline',
+                                      #  'drawopenpath',
+                                      #  'drawclosedpath',
+                                      #  'drawcircle',
+                                      #  'drawrect',
+                                        'eraseshape'
+                                       ],
                "displaylogo":False}
 
 features = ['edellinen', 
@@ -1077,7 +1086,7 @@ def plot_daily_prediction(df):
                                    marker = dict(color='red')),
                             go.Scatter(x = daily_baseline.index, 
                                    y = daily_baseline.values, 
-                                   name = 'Ennuste (Lineaariregressio)', 
+                                   name = 'Ennuste (Perusmalli)', 
                                    hovertemplate = hover_baseline,
                                    marker_symbol = 'diamond',
                                    mode = 'lines+markers',
@@ -1143,7 +1152,7 @@ def plot_weekly_prediction(df):
                                    marker = dict(color='green')),
                             go.Bar(x = weekly_pred.index, 
                                    y = weekly_pred.values, 
-                                   name = 'Ennuste (Lineaariregressio)', 
+                                   name = 'Ennuste (Perusmalli)', 
                                    hovertemplate = hover_pred,
                                    marker = dict(color='red')),
                             go.Scatter(x = weekly_baseline.index, 
@@ -1219,7 +1228,7 @@ def plot_quaterly_prediction(df):
                                    marker = dict(color='red')),
                             go.Scatter(x = quaterly_baseline.index, 
                                    y = quaterly_baseline.values, 
-                                   name = 'Ennuste (Lineaariregressio)', 
+                                   name = 'Ennuste (Perusmalli)', 
                                    hovertemplate = hover_baseline,
                                    marker_symbol = 'diamond',
                                    mode = 'lines+markers',
@@ -1287,7 +1296,7 @@ def plot_yearly_prediction(df):
                                    marker = dict(color='red')),
                             go.Scatter(x = yearly_baseline.index, 
                                    y = yearly_baseline.values, 
-                                   name = 'Ennuste (Lineaariregressio)', 
+                                   name = 'Ennuste (Perusmalli)', 
                                    hovertemplate = hover_baseline,
                                    marker_symbol = 'diamond',
                                    mode = 'lines+markers',
@@ -1355,7 +1364,7 @@ def plot_monthly_prediction(df):
                                    marker = dict(color='red')),
                             go.Scatter(x = monthly_baseline.index, 
                                    y = monthly_baseline.values, 
-                                   name = 'Ennuste (Lineaariregressio)', 
+                                   name = 'Ennuste (Perusmalli)', 
                                    hovertemplate = hover_baseline,
                                    marker_symbol = 'diamond',
                                    mode = 'lines+markers',
@@ -1418,7 +1427,7 @@ def plot_cumulative_prediction(df):
                                        marker = dict(color='red')),
                             go.Scatter(x = df_pred.index, 
                                        y = df_pred['baseline'], 
-                                       name = 'Ennuste (Lineaariregressio)', 
+                                       name = 'Ennuste (Perusmalli)', 
                                        hovertemplate = hover_baseline,
                                        marker_symbol = 'diamond',
                                        marker = dict(color='blue',size=10))
@@ -1476,7 +1485,7 @@ def plot_daily_test(df):
     
     
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(daily_test.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(daily_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(daily_test[i],2)).replace(',',' '),
@@ -1505,7 +1514,7 @@ def plot_daily_test(df):
                            marker = dict(color='red', size = 10)),
                 go.Scatter(x = daily_baseline.index, 
                            y = daily_baseline.values, 
-                           name = 'Ennuste (Lineaariregressio)',
+                           name = 'Ennuste (Perusmalli)',
                            mode = 'markers', 
                            hovertemplate=hovertemplate, 
                            marker_symbol = 'diamond',
@@ -1566,7 +1575,7 @@ def plot_weekly_test(df):
 
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(weekly_test.index[i].strftime('%-d. %Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(weekly_test.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(weekly_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(weekly_test[i],2)).replace(',',' '),
@@ -1595,7 +1604,7 @@ def plot_weekly_test(df):
                            marker = dict(color='red', size = 10)),
                 go.Scatter(x = weekly_baseline.index, 
                            y = weekly_baseline.values, 
-                           name = 'Ennuste (Lineaariregressio)',
+                           name = 'Ennuste (Perusmalli)',
                            mode = 'markers', 
                            hovertemplate=hovertemplate, 
                            marker_symbol = 'diamond',
@@ -1665,7 +1674,7 @@ def plot_monthly_test(df):
     
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(monthly_test.index[i],
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(monthly_test.index[i],
         '{:,}'.format(round(monthly_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(monthly_test[i],2)).replace(',',' '),
@@ -1694,7 +1703,7 @@ def plot_monthly_test(df):
         
                 go.Scatter(x = monthly_baseline.index, 
                            y = monthly_baseline.values, 
-                           name = 'Ennuste (Lineaariregressio)',
+                           name = 'Ennuste (Perusmalli)',
                            mode = 'markers', 
                            hovertemplate=hovertemplate, 
                            marker_symbol = 'diamond',
@@ -1761,7 +1770,7 @@ def plot_yearly_test(df):
                                                           '{:,}'.format(round(yearly_true.values[i],2)).replace(',',' ')) for i in range(len(yearly_true))]
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(yearly_test.index[i],
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(yearly_test.index[i],
         '{:,}'.format(round(yearly_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(yearly_test[i],2)).replace(',',' '),
@@ -1789,7 +1798,7 @@ def plot_yearly_test(df):
                            marker = dict(color='red', size = 10)),
                 go.Scatter(x = yearly_baseline.index, 
                            y = yearly_baseline.values, 
-                           name = 'Ennuste (Lineaariregressio)',
+                           name = 'Ennuste (Perusmalli)',
                            mode = 'markers', 
                            hovertemplate=hovertemplate, 
                            marker_symbol = 'diamond',
@@ -1858,7 +1867,7 @@ def plot_quaterly_test(df):
     hover_test = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennustettu</b>: {} €<br><b>Virhe</b>: {} €<br><b>Tarkkuus</b>: {} %'.format(quaterly_true.index[i],'{:,}'.format(round(quaterly_true.values[i],2)).replace(',',' '),'{:,}'.format(round(quaterly_test.values[i],2)).replace(',',' '),'{:,}'.format(round(test_error.values[i],2)).replace(',',' '),round(test_error_percentage.values[i],2)) for i in range(len(quaterly_true))]
     
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(quaterly_test.index[i],
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(quaterly_test.index[i],
         '{:,}'.format(round(quaterly_true[i],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(quaterly_test[i],2)).replace(',',' '),
@@ -1884,7 +1893,7 @@ def plot_quaterly_test(df):
                            marker = dict(color='red', size = 10)),
                 go.Scatter(x = quaterly_baseline.index, 
                            y = quaterly_baseline.values, 
-                           name = 'Ennuste (Lineaariregressio)',
+                           name = 'Ennuste (Perusmalli)',
                            mode = 'markers', 
                            hovertemplate=hovertemplate, 
                            marker_symbol = 'diamond',
@@ -1933,7 +1942,7 @@ def plot_cumulative_test(df):
     baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / test_data[label]), 2)
 
     
-    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
+    hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),
@@ -1975,7 +1984,7 @@ def plot_cumulative_test(df):
                            marker = dict(color='red')),
                 go.Scatter(x = test_data.index, 
                            y = test_data['baseline'], 
-                           name = 'Ennuste (Lineaariregressio)', 
+                           name = 'Ennuste (Perusmalli)', 
                            hovertemplate = hovertemplate,
                            marker = dict(color='blue')),
 
@@ -2011,7 +2020,7 @@ def serve_layout():
                html.Br(),
                html.H1('Perustoimeentulotuki Suomessa',style={'textAlign':'center', 'font-size':60, 'color':'black'}),
                html.Br(),
-               html.H2('ja sen ennakointi kunnittain',style={'textAlign':'center', 'font-size':40, 'color':'black'}),
+               html.H2('maksusuoritusten projisointi kunnittain',style={'textAlign':'center', 'font-size':40, 'color':'black'}),
                html.Br(),
               
               
@@ -2023,7 +2032,7 @@ def serve_layout():
                        html.Br(),
                        dcc.Dropdown(id = 'kunta_dropdown', 
                             options = kunta_options, 
-                            value = 'Turku',
+                            value = 'Tampere',
                             multi = False,
                             style = {'font-size':18, 'font-family':'Arial','color': 'black'},
                             placeholder = 'Valitse kunta.'),
@@ -2127,7 +2136,7 @@ def serve_layout():
                                        {'label': 'Elastinen verkko', 'value': 'ElasticNet'},
                                        {'label': 'Ei regularisointia', 'value': 'LinearRegression'}
                                    ],
-                                   value='Lasso',
+                                   value='ElasticNet',
                                    labelStyle={'display':'inline-block', 'padding':'10px'},
                                    
                            
@@ -2199,13 +2208,15 @@ def serve_layout():
                                 html.Br(),
                                 html.H4('Johdanto',style={'textAlign':'center', 'color':'black'}),
                                 html.Br(),
-                                html.P('Tämä sovellus hyödyntää Kelan tilastoimia päivittäistä dataa toimeentulotukien maksuista ja palautuksista ja pyrkii muodostamaan koneoppimisen avulla ennusteen tulevaisuuteen. Käyttäjä voi valita haluamansa tukilajin sekä kunnan alasvetovalikoista, tarkastella toteumadataa sekä tehdä valitun pituisen ennusteen. ',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('Tämä sovellus hyödyntää Kelan tilastoimia päivittäistä dataa toimeentulotukien maksuista ja palautuksista ja pyrkii muodostamaan koneoppimisen avulla projektion tulevaisuuteen. Käyttäjä voi valita haluamansa tukilajin sekä kunnan alasvetovalikoista, tarkastella toteumadataa sekä tehdä valitun pituisen ennusteen. Sovellus hyödyntää vain transaktiodataa ja pyrkii projisoimaan sitä tulevaisuuteen perustuen vain maksujen ja palautusten kumulatiivisen kertymän lineaarisuuteen. Kyseessä ei ole siis perustoimeentulotuen määrää selittävien tekijöiden perusteella tehty prediktiivinen analyysi, vaan projektio tehdään sillä oletuksella, että maksutransaktioiden kumulatiivinen luonne säilyy lineaarisena tulevaisuuteen.  ',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('Sovelluksen avulla voidaan testata eri lineaarisen regression varianttien toimivuutta toimeentulotuen maksusuoritusten ennustamiseen. Ennustaminen tapahtuu muodostamalla halutun suureen kumulatiivinen aikasarja, joka useimmiten paljastuu lineaariseksi. Ennustamalla kumulatiivista arvoa, saadaan päiväkohtainen arvo vähentämällä saadusta kumulatiivisesta arvosta edellisen päivän kumulatiivinen arvo. Päiväkohtaiset ennusteet voidaan taas summata eri ajanjaksoittain, esimerkiksi kvartaaleittain. Ennusteen piirteinä hyödynnetään edeltävän päivän kumulatiivista arvoa sekä ajallista etäisyyttä nykyhetken ja tulevan maksupäivän välillä (päivissä). Tarkemmin sanoen, käytössä on etäisyyden käänteisluku, jolla pyritään mallintamaan läheisyyttä maksupäivään suuremmilla luvuilla. Jos esimerkiksi seuraava maksupäivä on kolmen päivän päästä, on käänteinen etäisyys 1/3. Etäisyyden ollessa nolla (on maksupäivä), käänteinen etäisyys on suurin ja saa arvo yksi. Lisäksi käänteinen etäisyys on normalisoitu kertomalla yhdestä poikkeavat luvut kertoimella {}, jotta saadaan tehtyä ero käänteiselle etäisyydelle, kun etäisyys on yksi tai nolla.'.format(distance_baseline),style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('Sovellus hyödyntää vain transaktiodataa ja pyrkii projisoimaan sitä tulevaisuuteen perustuen vain maksujen ja palautusten kumulatiivisen kertymän lineaarisuuteen. Kyseessä ei ole siis perustoimeentulotuen määrää selittävien tekijöiden perusteella tehty prediktiivinen analyysi, vaan projektio tehdään sillä oletuksella, että maksutransaktioiden kumulatiivinen luonne säilyy lineaarisena tulevaisuuteen. Siinä mielessä tätä sovellusta ei tule ymmärtää puhtaasti toimeentulotuen ennustamisen työkaluna, vaan enemmänkin teknisenä harjoitustyönä, jolla saadaan mahdollisesti "viivoitin-tekniikkaa" parempia projektioita.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('Sovellus hyödyntää käyttäjän valitsemaa regularisointimallia. Valittavissa on Ridge, Lasso sekä niiden yhdistelmä, Elastinen verkko. Ohjelma optimoi algoritmin regularisointiparametrin ja suorittaa lopullisen ennusteen parhaalla mahdollisella algoritmilla. Regularisoinnista voi lukea lisää alla esitettyjen lähdeviittauksien kautta. On myös mahdollista valita regressio ilman regularisointia. Ohjelmassa on valittu viitearvoksi tavallinen lineaariregressio, joka muodostaa suoran vain edellisten päivien kumulatiivisten arvojen perusteella. Näin voidaan tarkastella pystyttiinkö monimutkaisemmalla mallinnuksella tuottamaan yksinkertaista mallia parempi ennuste.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('Sovelluksen avulla voidaan testata eri lineaarisen regression varianttien toimivuutta toimeentulotuen maksusuoritusten projisoimisessa. Projisinti tapahtuu muodostamalla halutun suureen kumulatiivinen aikasarja, joka useimmiten paljastuu lineaariseksi (joillain kunnilla suoritusten kumulatiivinen käyrä saattaa olla epälineaarinen). Projisoimalla kumulatiivista arvoa, saadaan päiväkohtainen arvo vähentämällä saadusta kumulatiivisesta arvosta edellisen päivän kumulatiivinen arvo. Päiväkohtaiset projektiot voidaan taas summata eri ajanjaksoittain, esimerkiksi kvartaaleittain. Tässä sovelluksessa käytetään lineaarisia koneoppimismalleja, jonka piirteinä hyödynnetään edeltävän päivän kumulatiivista arvoa sekä ajallista etäisyyttä nykyhetken ja tulevan maksupäivän välillä (päivissä). Tarkemmin sanoen, käytössä on etäisyyden käänteisluku, jolla pyritään mallintamaan läheisyyttä maksupäivään suuremmilla luvuilla. Jos esimerkiksi seuraava maksupäivä on kolmen päivän päästä, on käänteinen etäisyys 1/3. Etäisyyden ollessa nolla (on maksupäivä), käänteinen etäisyys on suurin ja saa arvo yksi. Lisäksi käänteinen etäisyys on normalisoitu kertomalla yhdestä poikkeavat luvut kertoimella {}, jotta saadaan tehtyä ero käänteiselle etäisyydelle, kun etäisyys on yksi tai nolla.'.format(distance_baseline),style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('Ennusteen laatua pystyy tarkastelemaan vertailemalla toteutunutta dataa sekä testissä tehtyä ennustetta. Näin käyttäjä saa parempaa tietoa ennusteen luotettavuudesta. Tässä sovelluksessa data esitetään kuvaajilla, joiden aikafrekvenssiä voi säätää haluamakseen. Kuvaajien oikeassa yläkulmassa on työkaluja muun muassa kuvan tarkentamiseen sekä kuvatiedoston vientiin.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('Sovellus hyödyntää käyttäjän valitsemaa regularisointimallia. Regularisoinnilla pyritään parantamaan lineaarisen mallin ennustekykyä matemaattisin metodein. Yleisesti käytetyimmät ovat valittavissa on Ridge, Lasso sekä niiden yhdistelmä, Elastinen verkko. Mallithan pyrkivät tuottamaan sellaisen suoran yhtälön, jolla ero toteuman välillä on mahdollisimman pieni. Optimointi määritellään kustannusfunktion avulla, jota regularisointitekniikat penalisoivat paremman tuloksen löytymiseksi. Ridge (tunnetaan myös Tikhonovin regularisaationa) hyödyntää opittujen painojen neliösummaa, kun taas Lasso hyödyntää niiden itseisarvoa. Lassoa voi hyödyntää myös kohinan poistona, joka pyrkii eliminoimaan epähyödyllisten piirteiden vaikutuksen oppimisessa. Elastinen verkko on Ridgen ja Lasson yhdistelmä, joka on tässä ohjelmassa toteutettu 50-50 jaolla (mikä tahansa jakosuhde on yleisesti ottaen mahdollista). Regularisoinnista voi lukea lisää alhaalla olevan viiteosion linkkien kautta. Regularisointitekniikan lisäksi on määriteltävä regularisoinnin kerroin, jonka tämä ohjelma optimoi automaattisesti. Lopullinen projektio tehdään siten parhaalla mahdollisella algoritmilla (jossa on hyödynnetty käyttäjän määrittelemää tekniikkaa ja optimoitua regularisointikerrointa (λ)). Regularisoinnista voi lukea lisää alla esitettyjen lähdeviittauksien kautta. On myös mahdollista valita regressio ilman regularisointia. Ohjelmassa on valittu perusmalli tavallinen lineaariregressiomalli, joka muodostaa suoran vain edellisten päivien kumulatiivisten arvojen perusteella. Näin voidaan tarkastella pystyttiinkö monimutkaisemmalla mallinnuksella tuottamaan yksinkertaista mallia parempi projektio. Regularisointitekniikan valinta on täysin tapauskohtaista, ja käyttäjä voikin kokeilla eri tekniikoita ja analysoida näin saadun testiprojektion onnistuneissuutta.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.Br(),
+                                html.P('Projektion laatua pystyy tarkastelemaan vertailemalla toteutunutta dataa sekä testissä tehtyä projisointia. Näin käyttäjä saa parempaa tietoa ennusteen luotettavuudesta. Tässä sovelluksessa data esitetään kuvaajilla, joiden aikafrekvenssiä voi säätää haluamakseen. Kuvaajien oikeassa yläkulmassa on työkaluja muun muassa kuvan tarkentamiseen sekä kuvatiedoston vientiin.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
                                 html.H4('Ohje',style={'textAlign':'center', 'color':'black'}),
                                 html.Br(),
@@ -2213,9 +2224,9 @@ def serve_layout():
                                 html.Br(),
                                 html.P('2. Valitse haluttu suure. Voit tarkastella suuretta eri ajanjaksoissa tai kumulatiivisesti.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),             
                                 html.Br(),
-                                html.P('3. Valitse validointi - ja testidatan pituus. Tästä puolet käytetään validointidatana, jonka avulla koneoppimisalgoritmi valitsee hyperparametrit. Toinen puoli käytetään testaamiseen.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('3. Valitse validointi - ja testidatan pituus. Tästä puolet käytetään validointidatana, jonka avulla koneoppimisalgoritmi valitsee hyperparametrit. Toinen puoli käytetään testaamiseen. Käyttäjän on syytä huomioida, että alkuperäisessä datassa tulee olla enemmän päiviä (joillakin kunnilla saattaa olla esim. muutaman päivän aikasarja, jolloin sadan päivän testi -ja validointidatan valinta ei ole järkevää).',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
-                                html.P('4. Valitse regularisointityypiksi joko Ridge, Lasso tai Elastinen verkko.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
+                                html.P('4. Valitse regularisointityypiksi joko Ridge, Lasso, Elastinen verkko tai "Ei regularisointia". Mikäli valitset viimeisimmän vaihtoehdon, ei regularisointia sovelleta koneoppimisessa.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
                                 html.P('5. Klikkaa "Testaa"-painiketta. Tämän jälkeen voit tarkastella testin tuloksia alle ilmestyvästä kuvaajasta.',style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'}),
                                 html.Br(),
@@ -2369,7 +2380,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
         baseline_error = test_data.baseline - test_data[label]
         baseline_error_percentage = np.round( 100 * (1 - np.absolute(baseline_error) / test_data[label]), 2)
 
-        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Lineaariregressio)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>LR virhe</b>: {} €<br><b>LR tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
+        hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),
          reg_type,
         '{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),
@@ -2404,7 +2415,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
             
                 go.Scatter(x = test_data.index, 
                            y = test_data['baseline'], 
-                           name = 'Ennuste (Lineaariregressio)', 
+                           name = 'Ennuste (Perusmalli)', 
                            hovertemplate = hovertemplate,
                            marker = dict(color='blue')),
                  
@@ -2438,6 +2449,11 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
         frequency_options = [{'label':'Päivittäin','value':'D'},
                              {'label':'Viikoittain','value':'W'},
                              {'label':'Kuukausittain', 'value':'M'}]
+        
+        if len(test_data) >= 90:
+            frequency_options.append({'label':'Kvartaaleittain', 'value': 'Q'})
+        if len(test_data) >= 365:
+            frequency_options.append({'label':'Vuosittain', 'value': 'Y'})
 
         frequency_options.append({'label':'Kumulatiivisena', 'value': 'KUM'})
         
@@ -2501,7 +2517,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
                                       color='dark',body=True),
                              html.P('λ = '+str(alpha)),
                              html.Br(),
-                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa oikean aikayksikön valinnan mukaan. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Sinisellä värillä on kuvattu tavallisen lineaariregression tulos. Tooltipissä on kuvattu ennustetarkkuus ja virhe niin ennusteelle kuin lineaariselle regressiollekin. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää siis testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa. Tulosexceliin saa koosteen lasketuista virheistä. Tässä kuvaajassa ennusteen ja toteutuneen eroa voi tarkastella paremmin aikayksiköittäin. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
+                             html.P('Tällä kuvaajalla voit tarkastella ennustettua muuttujaa oikean aikayksikön valinnan mukaan. Kuvaajassa vihreällä värillä on esitetty testidata sekä punaisella testissä tehty ennuste. Sinisellä värillä on kuvattu perusmallin tulos. Tooltipissä on kuvattu ennustetarkkuus ja virhe niin ennusteelle kuin lineaariselle regressiollekin. Kumulatiivisessa kuvaajassa on piirretty myös opetus -ja validointidata, joita on hyödynnety regressiomallin opetuksessa sekä algoritmin optimoinnissa. Kuvaaja näyttää siis testin ja toteutuneen datan välisen eron. Yleisesti ottaen virhe on suurin päivittäisissä ennusteissa ja pienin kumulatiivisessa ennusteessa. Tulosexceliin saa koosteen lasketuista virheistä. Tässä kuvaajassa ennusteen ja toteutuneen eroa voi tarkastella paremmin aikayksiköittäin. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                         ],xs =12, sm=12, md=12, lg=5, xl=5, align = 'start'
                     ),
                 
@@ -2611,7 +2627,7 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
                            marker = dict(color='red')),
                 go.Scatter(x = pred_df.index, 
                            y = pred_df['baseline'], 
-                           name = 'Ennuste (Lineaariregressio)', 
+                           name = 'Ennuste (Perusmalli)', 
                            hovertemplate = hover_baseline,
                            marker = dict(color='blue'))
 
@@ -2667,7 +2683,7 @@ def predict_with_test_results(n_clicks, train_val_test, dataset, length):
                                          color='dark',
                                          body=True),
                                html.Br(),
-                               html.P('Tässä kuvaajassa esitetään itse ennuste, jota voi tarkastella, testitulosten tavoin halutulla aikayksiköllä. Punainen ja sininen käyrä ilmaisevat käytetyn ennustemallin sekä lineaarisen regression tekemiä ennusteita. Yleisesti ottaen, ennuste on kumulatiivisessa muodossaan tarkimmillaan ja heikoimillaan päiväkohtaisessa ennusteessa. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
+                               html.P('Tässä kuvaajassa esitetään itse ennuste, jota voi tarkastella, testitulosten tavoin halutulla aikayksiköllä. Punainen ja sininen käyrä ilmaisevat käytetyn ennustemallin sekä perusmallin tekemiä ennusteita. Yleisesti ottaen, ennuste on kumulatiivisessa muodossaan tarkimmillaan ja heikoimillaan päiväkohtaisessa ennusteessa. Kuvaajan kuvioita voi piilottaa ja palauttaa klikkaamalla selitteen arvoja. Kuvaajan oikeassa yläkulmassa on työkalurivi, josta saa työkaluja muun muassa zoomaamiseen ja kuvatiedoston vientiin.', style={'textAlign':'center','font-family':'Arial', 'font-size':20, 'color':'black'})
                                ]
         return prediction, predict_placeholder_children,frequency_options, button_children
 
@@ -2849,8 +2865,8 @@ def download(n_clicks, prediction, train_val_test):
                                 'fourth_pay_day_distance': 'Käänteinen etäisyys 4. maksupäivään',
                                 'edellinen':'Edellisen päivän arvo',
                                 used_label:label,
-                               'baseline': 'Ennuste (Lineaariregressio)',
-                               'daily_baseline':'Päiväkohtainen LR-ennuste'})
+                               'baseline': 'Ennuste (Perusmalli)',
+                               'daily_baseline':'Päiväkohtainen Perusmallin-ennuste'})
         pr.index = [date.split()[0] for date in pr.index.astype(str)]
         pr.index.name = 'Maksupäivä'
         
@@ -2859,7 +2875,7 @@ def download(n_clicks, prediction, train_val_test):
         train_val_test_ = train_val_test_.rename(columns={
                                'daily_true':'Päiväkohtainen arvo',
                                 'daily_pred':'Päiväkohtainen ennuste',
-                                'daily_baseline':'Päiväkohtainen LR-ennuste',
+                                'daily_baseline':'Päiväkohtainen Perusmallin-ennuste',
                                 'first_pay_day_distance': 'Käänteinen etäisyys 1. maksupäivään',
                                 'second_pay_day_distance': 'Käänteinen etäisyys 2. maksupäivään',
                                 'third_pay_day_distance': 'Käänteinen etäisyys 3. maksupäivään',
@@ -2867,9 +2883,9 @@ def download(n_clicks, prediction, train_val_test):
                                 'edellinen':'Edellisen päivän arvo',
                                 used_label:label,
                                 'ennuste_edellinen':'Edellisen päivän ennuste',
-                                'baseline_edellinen':'Edellisen päivän LR-ennuste',
+                                'baseline_edellinen':'Edellisen päivän Perusmallin-ennuste',
                                 'ennustettu': 'Ennuste ({})'.format(reg_type),
-                               'baseline': 'Ennuste (Lineaariregressio)'})
+                               'baseline': 'Ennuste (Perusmalli)'})
 
         
         train_val_test_.index = [date.split()[0] for date in train_val_test_.index.astype(str)]
@@ -2884,16 +2900,16 @@ def download(n_clicks, prediction, train_val_test):
         
         remove = ['Päiväkohtainen arvo', 
                   'Päiväkohtainen ennuste',
-                  'Päiväkohtainen LR-ennuste', 
+                  'Päiväkohtainen Perusmallin-ennuste', 
                   'Edellisen päivän ennuste', 
-                  'Edellisen päivän LR-ennuste',
+                  'Edellisen päivän Perusmallin-ennuste',
                   'reg_type',
                   'name',
                   'kunta',
                  'alpha',
                   'split',
                   'label',
-                  'Ennuste (Lineaariregressio)',
+                  'Ennuste (Perusmalli)',
                   'Ennuste ({})'.format(reg_type),
                  'split_portion']
         
@@ -2907,30 +2923,30 @@ def download(n_clicks, prediction, train_val_test):
         test_data['Absoluuttinen virhe'] = np.absolute(test_data[label] - test_data['Ennuste ({})'.format(reg_type)])        
         test_data['Suhteellinen virhe'] = test_data['Absoluuttinen virhe'] / test_data[label]
         
-        test_data['Absoluuttinen virhe (LR)'] = np.absolute(test_data[label] - test_data['Ennuste (Lineaariregressio)'])        
-        test_data['Suhteellinen virhe (LR)'] = test_data['Absoluuttinen virhe (LR)'] / test_data[label]
+        test_data['Absoluuttinen virhe (Perusmallin)'] = np.absolute(test_data[label] - test_data['Ennuste (Perusmalli)'])        
+        test_data['Suhteellinen virhe (Perusmallin)'] = test_data['Absoluuttinen virhe (Perusmallin)'] / test_data[label]
         
         test_data['Absoluuttinen päivävirhe'] = np.absolute(test_data['Päiväkohtainen arvo'] - test_data['Päiväkohtainen ennuste'])        
         test_data['Suhteellinen päivävirhe'] = test_data['Absoluuttinen päivävirhe'] / test_data['Päiväkohtainen arvo']
         
-        test_data['Absoluuttinen päivävirhe (LR)'] = np.absolute(test_data['Päiväkohtainen arvo'] - test_data['Päiväkohtainen LR-ennuste'])        
-        test_data['Suhteellinen päivävirhe (LR)'] = test_data['Absoluuttinen päivävirhe (LR)'] / test_data['Päiväkohtainen arvo']        
+        test_data['Absoluuttinen päivävirhe (Perusmallin)'] = np.absolute(test_data['Päiväkohtainen arvo'] - test_data['Päiväkohtainen Perusmallin-ennuste'])        
+        test_data['Suhteellinen päivävirhe (Perusmallin)'] = test_data['Absoluuttinen päivävirhe (Perusmallin)'] / test_data['Päiväkohtainen arvo']        
         
                                                                                               
         mae = test_data['Absoluuttinen virhe'].mean()   
         mape = test_data['Suhteellinen virhe'].mean()
         accuracy = 1 - mape
         
-        mae_lr = test_data['Absoluuttinen virhe (LR)'].mean()
-        mape_lr = test_data['Suhteellinen virhe (LR)'].mean()
+        mae_lr = test_data['Absoluuttinen virhe (Perusmallin)'].mean()
+        mape_lr = test_data['Suhteellinen virhe (Perusmallin)'].mean()
         accuracy_lr = 1 - mape_lr
         
         mae_day = test_data['Absoluuttinen päivävirhe'].mean()   
         mape_day = test_data['Suhteellinen päivävirhe'].mean()
         accuracy_day = 1 - mape_day
         
-        mae_lr_day = test_data['Absoluuttinen päivävirhe (LR)'].mean()
-        mape_lr_day = test_data['Suhteellinen päivävirhe (LR)'].mean()
+        mae_lr_day = test_data['Absoluuttinen päivävirhe (Perusmallin)'].mean()
+        mape_lr_day = test_data['Suhteellinen päivävirhe (Perusmallin)'].mean()
         accuracy_lr_day = 1 - mape_lr_day
         
         
@@ -2943,16 +2959,16 @@ def download(n_clicks, prediction, train_val_test):
                                   'Testin keskimääräinen absoluuttinen virhe ({})'.format(reg_type): '{:,}'.format(round(mae,2)).replace(',',' ')+' €',
                                   'Testin keskimääräinen suhteellinen virhe ({})'.format(reg_type): str(round(100*mape,2))+' %',
                                   'Testin keskimääräinen tarkkuus ({})'.format(reg_type): str(round(100*accuracy,2))+' %',
-                                  'Testin keskimääräinen absoluuttinen virhe (LR)': '{:,}'.format(round(mae_lr,2)).replace(',',' ')+' €',
-                                  'Testin keskimääräinen suhteellinen virhe (LR)': str(round(100*mape_lr,2))+' %',
-                                  'Testin keskimääräinen tarkkuus (LR)': str(round(100*accuracy_lr,2))+' %',
+                                  'Testin keskimääräinen absoluuttinen virhe (Perusmallin)': '{:,}'.format(round(mae_lr,2)).replace(',',' ')+' €',
+                                  'Testin keskimääräinen suhteellinen virhe (Perusmallin)': str(round(100*mape_lr,2))+' %',
+                                  'Testin keskimääräinen tarkkuus (Perusmallin)': str(round(100*accuracy_lr,2))+' %',
 
                                   'Testin keskimääräinen absoluuttinen päivävirhe ({})'.format(reg_type): '{:,}'.format(round(mae_day,2)).replace(',',' ')+' €',
                                   'Testin keskimääräinen suhteellinen päivävirhe ({})'.format(reg_type): str(round(100*mape_day,2))+' %',
                                   'Testin keskimääräinen päiväkohtainen tarkkuus ({})'.format(reg_type): str(round(100*accuracy_day,2))+' %',
-                                  'Testin keskimääräinen absoluuttinen päivävirhe (LR)': '{:,}'.format(round(mae_lr_day,2)).replace(',',' ')+' €',
-                                  'Testin keskimääräinen suhteellinen päivävirhe (LR)': str(round(100*mape_lr_day,2))+' %',
-                                  'Testin keskimääräinen päiväkohtainen tarkkuus (LR)': str(round(100*accuracy_lr_day,2))+' %',                                  
+                                  'Testin keskimääräinen absoluuttinen päivävirhe (Perusmallin)': '{:,}'.format(round(mae_lr_day,2)).replace(',',' ')+' €',
+                                  'Testin keskimääräinen suhteellinen päivävirhe (Perusmallin)': str(round(100*mape_lr_day,2))+' %',
+                                  'Testin keskimääräinen päiväkohtainen tarkkuus (Perusmallin)': str(round(100*accuracy_lr_day,2))+' %',                                  
                                   
                                  'Ennusteen pituus': str(pituus)+' päivää'}]).T.reset_index()
         metadata.columns = ['Tieto','Arvo']
