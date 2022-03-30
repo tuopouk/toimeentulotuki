@@ -2382,7 +2382,7 @@ def start(n_clicks, cum_data, label_name, reg_type, test):
 
         hovertemplate = ['<b>{}</b><br><b>Toteutunut</b>: {} €<br><b>Ennuste ({})</b>: {} €<br><b>Ennuste (Perusmalli)</b>: {} €<br><b>Ennustevirhe</b>: {} €<br><b>Ennustetarkkuus</b>: {} %<br><b>Perusmallin virhe</b>: {} €<br><b>Perusmallin tarkkuus</b>: {} %.'.format(test_data.index[i].strftime('%-d. %Bta %Y'),
         '{:,}'.format(round(test_data.iloc[i][label],2)).replace(',',' '),
-         reg_type,
+         {'Lasso':'Lasso','Ridge':'Ridge', 'ElasticNet': 'Elastinen verkko','LinearRegression':'Ei regularisointia'}[reg_type],
         '{:,}'.format(round(test_data.iloc[i]['ennustettu'],2)).replace(',',' '),
         '{:,}'.format(round(test_data.iloc[i]['baseline'],2)).replace(',',' '),
         '{:,}'.format(round(test_error[i],2)).replace(',',' '),
