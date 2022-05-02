@@ -83,7 +83,7 @@ app = Dash(name = __name__,
            external_stylesheets = external_stylesheets
           )
 
-
+app.scripts.config.serve_locally = False
 app.title = 'Toimeentulotuki Suomessa'
 
 app.scripts.append_script({"external_url": "https://cdn.plot.ly/plotly-locale-fi-latest.js"})
